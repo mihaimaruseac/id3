@@ -3,11 +3,14 @@
  * @author Mihai Maruseac (mihai@rosedu.org)
  *
  * @section DESCRIPTION
- * IAUT1: ID3
- * Main file
+ * IAUT1: ID3: Main file
+ *
+ * Contains the definition of the entry point and treats the
+ * command line arguments and options.
  *
  * @section QUOTE
- * TODO
+ * The question of whether a computer can think is no more interesting than
+ * the question of whether a submarine can swim. (Dijkstra)
  *
  * @section LICENCE
  * This code is distributed as is, under WTF Public License.
@@ -27,11 +30,11 @@ static void usage()
 			"\tLearning options and arguments:\n"
 			"\t\tFILES = ATTRFILE LEARNFILE ID3FILE(output)\n"
 			"\t\tOPTIONS:\n"
-			"\t\t\tHandling numeric attributes:\n"
-			"\t\t\t\t-ndiv - divide in two only once\n"
+			"\t\t\tHandling numeric attributes (one of):\n"
+			"\t\t\t\t-ndiv - divide in two only once (default)\n"
 			"\t\t\t\t-nfull - full handling\n"
-			"\t\t\tHandling missing attributes:\n"
-			"\t\t\t\t-mmaj - replace with the most frequent\n"
+			"\t\t\tHandling missing attributes (one of):\n"
+			"\t\t\t\t-mmaj - replace with most frequent (default)\n"
 			"\t\t\t\t-mprb - use probability theory\n"
 			"\t\t\t\t-mid3 - use ID3\n"
 			"\n"
@@ -39,8 +42,8 @@ static void usage()
 			"\t\tFILES = ID3FILE [OUTFILE(output)]\n"
 			"\t\t\tOUTFILE can be - (or missing) for stdout\n"
 			"\t\tOPTIONS:\n"
+			"\t\t\t-gtree - display tree-like (default)\n"
 			"\t\t\t-gdot - display using Dot\n"
-			"\t\t\t-gtree - display tree-like\n"
 			"\n"
 			"\tClassification options and arguments:\n"
 			"\t\tFILES = ATTRFILE TESTFILE [OUTFILE(output)]\n"
