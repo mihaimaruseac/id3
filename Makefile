@@ -10,10 +10,10 @@ all: $(TARGET)
 $(TARGET): $(OBJS)
 
 clean:
-	rm -f $(OBJS) $(TARGET)
+	$(RM) $(OBJS) $(TARGET)
 
 purge:
-	rm -rf $(OBJS) $(TARGET) tags html
+	$(RM) -r $(OBJS) $(TARGET) tags html
 
 test: $(TARGET)
 	$(TARGET)
