@@ -1,5 +1,6 @@
 /*!
- * @file
+ * @file id3.c
+ * @brief Main file
  * @author Mihai Maruseac (mihai@rosedu.org)
  *
  * @section DESCRIPTION
@@ -14,11 +15,19 @@
  *
  * @section LICENCE
  * This code is distributed as is, under WTF Public License.
+ *
+ * @bug No known bugs.
+ * @todo Implement output.
+ * @todo Implement testing.
  */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
+/**
+ * Prints the usage information.
+ */
 static void usage()
 {
 	fprintf(stderr, "./id3 CMD [OPTIONS] FILES\n"
@@ -52,9 +61,39 @@ static void usage()
 	exit(EXIT_FAILURE);
 }
 
+static void learning_instance(int argc, char **argv)
+{
+	if (argc < 5 || argc > 7)
+		usage();
+
+	exit(EXIT_SUCCESS);
+}
+
+static void graphing_instance(int argc, char **argv)
+{
+	exit(EXIT_SUCCESS);
+}
+
+static void classifying_instance(int argc, char **argv)
+{
+	exit(EXIT_SUCCESS);
+}
+
 int main(int argc, char **argv)
 {
+	if (argc < 2)
+		usage();
+
+	if (strncmp(argv[1], "l", 1) == 0)
+		learning_instance(argc, argv);
+
+	if (strncmp(argv[1], "g", 1) == 0)
+		graphing_instance(argc, argv);
+
+	if (strncmp(argv[1], "c", 1) == 0)
+		classifying_instance(argc, argv);
+
 	usage();
-	exit(EXIT_SUCCESS);
+	exit(EXIT_FAILURE);
 }
 
