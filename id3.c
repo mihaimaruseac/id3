@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "id3learn.h"
 #include "globals.h"
 
 /**
@@ -70,7 +71,7 @@ static void learning_instance(int argc, char **argv)
 {
 	int num_handle, missing_handle;
 	char *attr_file, *learn_file, *id3_file;
-	int i;
+	int i, status;
 
 	if (argc < 5 || argc > 7)
 		usage();
@@ -119,10 +120,13 @@ static void learning_instance(int argc, char **argv)
 	if (missing_handle == UNKNOWN_VALUE)
 		missing_handle = MISS_MAJ;
 
+	status = id3_learn(num_handle, missing_handle, attr_file, learn_file,
+			id3_file);
+
 	free(attr_file);
 	free(learn_file);
 	free(id3_file);
-	exit(EXIT_SUCCESS);
+	exit(status);
 fail:
 	if (attr_file != UNKNOWN_VALUE)
 		free(attr_file);
