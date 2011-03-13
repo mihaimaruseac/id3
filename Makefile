@@ -3,7 +3,7 @@
 TARGET = ./id3
 CFLAGS = -Wall -Wextra -g -O0 -Wno-unused
 LDFLAGS = -lm
-OBJS = id3.o
+OBJS = id3.o globals.o
 
 all: $(TARGET)
 
