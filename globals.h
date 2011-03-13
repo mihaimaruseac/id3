@@ -36,7 +36,7 @@
 		} \
 	} while (0)
 
-#define UNKNOWN_VALUE 0 /**< @brief option not set or value not known */
+#define UNKNOWN_VALUE -1 /**< @brief option not set or value not known */
 
 #define NUM_DIV 1 /**< @brief handle numeric attributes by binary split */
 #define NUM_FULL 2 /**< @brief full handling of numeric attributes */
@@ -44,6 +44,14 @@
 #define MISS_MAJ 1 /**< @brief replace missing attributes with the majority */
 #define MISS_PRB 2 /**< @brief use probabilities to guess the missing values */
 #define MISS_ID3 3 /**< @brief use ID3 to detect values for missing values */
+
+#define MISS_COUNT 2 /**< @brief max number of missing columns */
+/**
+ * @brief Macro used to determine if a bit is set in a flag.
+ *
+ * It is used to detect which attribute is missing in one example.
+ */
+#define MISS_INDEX(flag, index) ((flag) & (1 << (index)))
 
 /**
  * @brief Enumeration of possible types of an attribute.
@@ -94,12 +102,85 @@ struct description {
 };
 
 /**
+ * @brief Structure used to represent an example from the learning set or from
+ * the problem set.
+ *
+ * This structure contains an integer to represent the class. Also, to
+ * represent the attributes, we will use integers. Both values will point into
+ * the description structure to the right value.
+ *
+ * To represent a missing attribute value we use a flag which will have a bit
+ * set if the attribute corresponding to the index from struct
+ * example_set->missing is missing in this example (using MISS_INDEX macro).
+ */
+struct example {
+	/** ID of class (as given by struct description) */
+	int class_id;
+	/** ID of each attribute (as given by struct description and struct
+	 * attribute)
+	 */
+	int **attr_ids;
+	/** Flag for missing values */
+	int miss;
+};
+
+/**
+ * @brief Structure representing the learning set.
+ *
+ * The missing vector contains the indexes of missing value attributes.
+ */
+struct example_set {
+	/** Number of samples */
+	int N;
+	/** Examples */
+	struct example **examples;
+	/** Missing columns */
+	int missing[MISS_COUNT];
+};
+
+/**
  * @brief Reads the description for one problem.
  *
  * @param file Problem description file.
  * @return Pointer to the description of the problem.
  */
 struct description *read_description_file(FILE *file);
+
+/**
+ * @brief Reads the learning set for one problem.
+ *
+ * Wrapper function around read_set which is used to read both the learning
+ * set and the test set.
+ *
+ * @param file Learning set description file
+ * @return The learning set.
+ */
+struct example_set *read_learning_file(FILE *file);
+
+/**
+ * @brief Reads the testing set for one problem.
+ *
+ * Wrapper function around read_set which is used to read both the learning
+ * set and the test set.
+ *
+ * @param file Learning set description file
+ * @return The learning set.
+ */
+struct example_set *read_testing_file(FILE *file);
+
+/**
+ * @brief Reads a set to use when learning (learning = 1) or classifying
+ * (learning = 0).
+ *
+ * If learning is 0 then there will be no missing values and no class
+ * informations in the file. However, the structures would be too similar if
+ * separate data types would be used for the two cases.
+ *
+ * @param file Description file
+ * @param learning Flag describing what to expect
+ * @return The required set.
+ */
+static struct example_set *read_set(FILE *file, int learning);
 
 /**
  * @brief Reads one attribute from the description file.
@@ -112,13 +193,33 @@ struct description *read_description_file(FILE *file);
 static struct attribute *read_attribute(FILE *file);
 
 /**
- * @brief Frees the memory alocated to one description.
+ * @brief Reads one example from a file.
+ *
+ * Used in a loop to read the entire example set.
+ *
+ * @param file File containing the example
+ * @param learning Flag describing what to expect (see read_set)
+ * @return The read example.
+ */
+static struct example *read_example(FILE *file, int learning);
+
+/**
+ * @brief Frees the memory allocated to one description.
  *
  * Does NOT free the pointer itself.
  *
  * @param ptr Pointer to the soon to be freed area.
  */
 void free_description(struct description *ptr);
+
+/**
+ * @brief Frees the memory allocated to one example set.
+ *
+ * Does NOT free the pointer itself.
+ *
+ * @param ptr Pointer to the soon to be freed area.
+ */
+void free_example_set(struct example_set *ptr);
 
 /**
  * @brief Frees one attribute from a description.
@@ -128,6 +229,15 @@ void free_description(struct description *ptr);
  * @param ptr Pointer to the attribute
  */
 static void free_attribute(struct attribute *ptr);
+
+/**
+ * @brief Frees one example from an example set.
+ *
+ * Does NOT free the pointer itselt.
+ *
+ * @param ptr Pointer to the example.
+ */
+static void free_example(struct example *ptr);
 
 /**
  * @brief Returns an error and sets the errno accordingly.
