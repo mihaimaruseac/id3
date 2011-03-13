@@ -25,14 +25,14 @@ int id3_learn(int num_handle, int missing_handle, FILE *attr_file, FILE
 	struct description *descr;
 
 	descr = read_description_file(attr_file);
-	if (descr == NULL)
-		return set_error(EINVAL); /* invalid file received */
-
-	dump_description(descr, stdout);
+	CHECK(descr != NULL, nodescr);
 
 	free_description(descr);
 	free_and_set_NULL(descr);
 
 	return EXIT_SUCCESS;
+
+nodescr:
+	return set_error(EINVAL); /* invalid file received */
 }
 

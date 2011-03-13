@@ -75,9 +75,9 @@ static void learning_instance(int argc, char **argv)
 
 	num_handle = UNKNOWN_VALUE;
 	missing_handle = UNKNOWN_VALUE;
-	attr_file = UNKNOWN_VALUE;
-	learn_file = UNKNOWN_VALUE;
-	id3_file = UNKNOWN_VALUE;
+	attr_file = NULL;
+	learn_file = NULL;
+	id3_file = NULL;
 
 	for (i = 2; i < argc; i++)
 		if (argv[i][0] == '-')/* option */
@@ -98,19 +98,17 @@ static void learning_instance(int argc, char **argv)
 				missing_handle = MISS_ID3;
 			else
 				goto fail;
-		else if (attr_file == UNKNOWN_VALUE)
+		else if (attr_file == NULL)
 			attr_file = strdup(argv[i]);
-		else if (learn_file == UNKNOWN_VALUE)
+		else if (learn_file == NULL)
 			learn_file = strdup(argv[i]);
-		else if (id3_file == UNKNOWN_VALUE)
+		else if (id3_file == NULL)
 			id3_file = strdup(argv[i]);
 		else
 			goto fail;
 
-	if (id3_file == UNKNOWN_VALUE)
-		goto fail;
-	if (learn_file == UNKNOWN_VALUE)
-		goto fail;
+	CHECK(id3_file != NULL, fail);
+	CHECK(learn_file != NULL, fail);
 
 	if (num_handle == UNKNOWN_VALUE)
 		num_handle = NUM_DIV;
@@ -151,12 +149,9 @@ static void learning_instance(int argc, char **argv)
 
 	exit(status);
 fail:
-	if (attr_file != UNKNOWN_VALUE)
-		free(attr_file);
-	if (learn_file != UNKNOWN_VALUE)
-		free(learn_file);
-	if (id3_file != UNKNOWN_VALUE)
-		free(id3_file);
+	free_and_set_NULL(attr_file);
+	free_and_set_NULL(learn_file);
+	free_and_set_NULL(id3_file);
 	usage();
 }
 
@@ -172,8 +167,7 @@ static void classifying_instance(int argc, char **argv)
 
 int main(int argc, char **argv)
 {
-	if (argc < 2)
-		usage();
+	CHECK(argc >= 2, exit);
 
 	if (strncmp(argv[1], "l", 1) == 0)
 		learning_instance(argc, argv);
@@ -184,6 +178,7 @@ int main(int argc, char **argv)
 	if (strncmp(argv[1], "c", 1) == 0)
 		classifying_instance(argc, argv);
 
+exit:
 	usage();
 	exit(EXIT_FAILURE);
 }
