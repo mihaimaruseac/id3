@@ -15,8 +15,8 @@ clean:
 purge:
 	$(RM) -r $(OBJS) $(TARGET) tags html
 
-test: $(TARGET)
-	$(TARGET)
+test_learn: $(TARGET)
+	$(TARGET) l tests/1/atribute.txt tests/1/invatare.txt tests/1/dump.txt
 
 doc:
 	doxygen
