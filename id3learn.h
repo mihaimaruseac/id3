@@ -30,11 +30,10 @@
  * @param attr_file Filename for the attribute description file.
  * @param learn_file Filename for the example set file.
  * @param id3_file Filename used to output the classifier in a raw form.
- *
  * @return The exit code for the learning process.
  */
-int id3_learn(int num_handle, int missing_handle, char *attr_file, char
-		*learn_file, char *id3_file);
+int id3_learn(int num_handle, int missing_handle, FILE *attr_file, FILE
+		*learn_file, FILE *id3_file);
 
 #endif
 

@@ -6,7 +6,8 @@
  * @section DESCRIPTION
  * IAUT1: ID3: Global utilities and functions.
  *
- * Contains the definition of global functions used in the assignment.
+ * Contains the definition of global functions used in the assignment. It also
+ * includes the most important headers, used throughout the project.
  *
  * @section QUOTE
  * Artificial Intelligence, IT'S HERE. (Business Week cover,  July 9, 1984.)
@@ -17,14 +18,134 @@
 #ifndef _GLOBALS_H
 #define _GLOBALS_H
 
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+/**
+ * @brief Macro used to assert error conditions.
+ *
+ * Tests the condition and goes to a specific label if the condition is false
+ * (an erroneous call).
+ */
+#define CHECK(cond, label)\
+	do {\
+		if (!(cond)) {\
+			goto label;\
+		} \
+	} while (0)
+
 #define UNKNOWN_VALUE 0 /**< @brief option not set or value not known */
 
-#define NUM_DIV 1 /**< @brief handle numeric attributes by a single binary split */
+#define NUM_DIV 1 /**< @brief handle numeric attributes by binary split */
 #define NUM_FULL 2 /**< @brief full handling of numeric attributes */
 
 #define MISS_MAJ 1 /**< @brief replace missing attributes with the majority */
 #define MISS_PRB 2 /**< @brief use probabilities to guess the missing values */
 #define MISS_ID3 3 /**< @brief use ID3 to detect values for missing values */
+
+/**
+ * @brief Enumeration of possible types of an attribute.
+ */
+enum attr_type {
+	/** Numeric attribute */
+	NUMERIC,
+	/** Discrete attribute */
+	DISCRETE
+};
+
+/**
+ * @brief Structure used to represent a single attribute.
+ *
+ * If the attribute is numeric, the ptr vector will be relevant only when the
+ * structure is used in a real example: it will contain an index into the
+ * example data, sorted by the increasing values of the attribute.
+ *
+ * Otherwise, the ptr will point to a vector of names, used for the discrete
+ * values.
+ */
+struct attribute {
+	/** Name of the attribute */
+	char *name;
+	/** Type of attribute */
+	enum attr_type type;
+	/** Type-dependent pointer (see description) */
+	void **ptr;
+	/** Length of vector pointed to by ptr */
+	int C;
+};
+
+/**
+ * @brief Structure used to describe the learning problem.
+ *
+ * It contains the number of classes and their names and the number of
+ * attributes and their values.
+ */
+struct description {
+	/** Number of classes */
+	int K;
+	/** Names of classes */
+	char **classes;
+	/** Number of attributes */
+	int M;
+	/** Description of attributes */
+	struct attribute **attribs;
+};
+
+/**
+ * @brief Reads the description for one problem.
+ *
+ * @param file Problem description file.
+ * @return Pointer to the description of the problem.
+ */
+struct description *read_description_file(FILE *file);
+
+/**
+ * @brief Reads one attribute from the description file.
+ *
+ * Used in a loop in the main reading function.
+ *
+ * @param file File containing the description.
+ * @return The read attribute.
+ */
+static struct attribute *read_attribute(FILE *file);
+
+/**
+ * @brief Frees the memory alocated to one description.
+ *
+ * Does NOT free the pointer itself.
+ *
+ * @param ptr Pointer to the soon to be freed area.
+ */
+void free_description(struct description *ptr);
+
+/**
+ * @brief Frees one attribute from a description.
+ *
+ * Does NOT free the pointer itself.
+ *
+ * @param ptr Pointer to the attribute
+ */
+static void free_attribute(struct attribute *ptr);
+
+/**
+ * @brief Returns an error and sets the errno accordingly.
+ *
+ * @param err Error code
+ * @return Error code.
+ */
+int set_error(int err);
+
+/**
+ * @brief Frees a pointer and returns a NULL.
+ *
+ * Used for temporary variables in loops.
+ *
+ * @param ptr Pointer to be freed.
+ * @return NULL
+ */
+void *free_and_set_NULL(void *ptr);
 
 #endif
 

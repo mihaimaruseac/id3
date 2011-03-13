@@ -21,12 +21,8 @@
  * @todo Implement testing.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include "id3learn.h"
 #include "globals.h"
+#include "id3learn.h"
 
 /**
  * @brief Prints the usage information.
@@ -71,6 +67,7 @@ static void learning_instance(int argc, char **argv)
 {
 	int num_handle, missing_handle;
 	char *attr_file, *learn_file, *id3_file;
+	FILE *attr, *learn, *id3;
 	int i, status;
 
 	if (argc < 5 || argc > 7)
@@ -120,12 +117,38 @@ static void learning_instance(int argc, char **argv)
 	if (missing_handle == UNKNOWN_VALUE)
 		missing_handle = MISS_MAJ;
 
-	status = id3_learn(num_handle, missing_handle, attr_file, learn_file,
-			id3_file);
-
+	attr = fopen(attr_file, "r");
+	if (attr == NULL) {
+		perror("Cannot open attribute file");
+		goto fail;
+	}
 	free(attr_file);
+
+	learn = fopen(learn_file, "r");
+	if (learn == NULL) {
+		perror("Cannot open learn file");
+		fclose(attr);
+		goto fail;
+	}
 	free(learn_file);
+
+	id3 = fopen(id3_file, "w");
+	if (id3 == NULL) {
+		perror("Cannot open output file");
+		fclose(learn);
+		fclose(attr);
+		goto fail;
+	}
 	free(id3_file);
+
+	status = id3_learn(num_handle, missing_handle, attr, learn, id3);
+	if (status)
+		perror("Error while learning");
+
+	fclose(attr);
+	fclose(learn);
+	fclose(id3);
+
 	exit(status);
 fail:
 	if (attr_file != UNKNOWN_VALUE)
