@@ -4,6 +4,7 @@ TARGET = ./id3
 CFLAGS = -Wall -Wextra -g -O0 -Wno-unused
 LDFLAGS = -lm
 OBJS = id3.o globals.o id3learn.o
+DEBUG = valgrind --leak-check=full
 
 all: $(TARGET)
 
@@ -16,7 +17,7 @@ purge:
 	$(RM) -r $(OBJS) $(TARGET) tags html
 
 test_learn: $(TARGET)
-	$(TARGET) l tests/1/atribute.txt tests/1/invatare.txt tests/1/dump.txt
+	$(DEBUG) $(TARGET) l tests/1/atribute.txt tests/1/invatare.txt tests/1/dump.txt
 
 doc:
 	doxygen
