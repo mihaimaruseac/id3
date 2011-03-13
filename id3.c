@@ -25,8 +25,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "globals.h"
+
 /**
- * Prints the usage information.
+ * @brief Prints the usage information.
  */
 static void usage()
 {
@@ -61,12 +63,74 @@ static void usage()
 	exit(EXIT_FAILURE);
 }
 
+/**
+ * @brief Parses the cmd line for the case when we wish to learn a new classifier.
+ */
 static void learning_instance(int argc, char **argv)
 {
+	int num_handle, missing_handle;
+	char *attr_file, *learn_file, *id3_file;
+	int i;
+
 	if (argc < 5 || argc > 7)
 		usage();
 
+	num_handle = UNKNOWN_VALUE;
+	missing_handle = UNKNOWN_VALUE;
+	attr_file = UNKNOWN_VALUE;
+	learn_file = UNKNOWN_VALUE;
+	id3_file = UNKNOWN_VALUE;
+
+	for (i = 2; i < argc; i++)
+		if (argv[i][0] == '-')/* option */
+			if (strncmp(argv[i], "-ndiv", 5) == 0 && num_handle ==
+					UNKNOWN_VALUE)
+				num_handle = NUM_DIV;
+			else if (strncmp(argv[i], "-nfull", 6) == 0 &&
+					num_handle == UNKNOWN_VALUE)
+				num_handle = NUM_FULL;
+			else if (strncmp(argv[i], "-mmaj", 5) == 0 &&
+					missing_handle == UNKNOWN_VALUE)
+				missing_handle = MISS_MAJ;
+			else if (strncmp(argv[i], "-mprb", 5) == 0 &&
+					missing_handle == UNKNOWN_VALUE)
+				missing_handle = MISS_PRB;
+			else if (strncmp(argv[i], "-mid3", 5) == 0 &&
+					missing_handle == UNKNOWN_VALUE)
+				missing_handle = MISS_ID3;
+			else
+				goto fail;
+		else if (attr_file == UNKNOWN_VALUE)
+			attr_file = strdup(argv[i]);
+		else if (learn_file == UNKNOWN_VALUE)
+			learn_file = strdup(argv[i]);
+		else if (id3_file == UNKNOWN_VALUE)
+			id3_file = strdup(argv[i]);
+		else
+			goto fail;
+
+	if (id3_file == UNKNOWN_VALUE)
+		goto fail;
+	if (learn_file == UNKNOWN_VALUE)
+		goto fail;
+
+	if (num_handle == UNKNOWN_VALUE)
+		num_handle = NUM_DIV;
+	if (missing_handle == UNKNOWN_VALUE)
+		missing_handle = MISS_MAJ;
+
+	free(attr_file);
+	free(learn_file);
+	free(id3_file);
 	exit(EXIT_SUCCESS);
+fail:
+	if (attr_file != UNKNOWN_VALUE)
+		free(attr_file);
+	if (learn_file != UNKNOWN_VALUE)
+		free(learn_file);
+	if (id3_file != UNKNOWN_VALUE)
+		free(id3_file);
+	usage();
 }
 
 static void graphing_instance(int argc, char **argv)
