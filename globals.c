@@ -16,6 +16,17 @@
 
 #include "globals.h"
 
+/**
+ * @brief Local global variable used to detect errors in example or testing
+ * sets.
+ */
+static int error_in_set = 0;
+
+/**
+ * @brief Local variable used to detect the missing value attributes count.
+ */
+static int missing_count = 0;
+
 void *free_and_set_NULL(void *ptr)
 {
 	if (ptr)
@@ -94,6 +105,121 @@ fail:
 	return free_and_set_NULL(desc);
 }
 
+struct example_set *read_learning_file(FILE *file,
+		const struct description *descr)
+{
+	missing_count = 0;
+	return read_set(file, 1, descr);
+}
+
+struct example_set *read_testing_file(FILE *file,
+		const struct description *descr)
+{
+	return read_set(file, 0, descr);
+}
+
+struct example_set *read_set(FILE *file, int learning,
+		const struct description *descr)
+{
+	struct example_set *set;
+	int i;
+
+	set = calloc(1, sizeof(*set));
+
+	CHECK(fscanf(file, "%d", &set->N) == 1, fail);
+
+	set->examples = calloc(set->N, sizeof(set->examples[0]));
+	for (i = 0; i < set->N; i++) {
+		set->examples[i] = read_example(file, learning, descr, set);
+		CHECK(set->examples[i] != NULL, fail);
+	}
+
+	return set;
+
+fail:
+	free_example_set(set);
+	return free_and_set_NULL(set);
+}
+
+int get_index_from_descr(const char *string,
+		const struct attribute *attr)
+{
+	int index, l;
+
+	if (attr->type == NUMERIC) {
+		CHECK(sscanf(string, "%d", &index) == 1, fail);
+		return index;
+	}
+
+	l = strlen(string);
+	for (index = 0; index < attr->C; index++)
+		if (strncmp(string, attr->ptr[index], l) == 0)
+			return index;
+fail:
+	error_in_set = 1;
+	return 0;
+}
+
+int record_missing(int index, struct example_set *set)
+{
+	int i;
+
+	for (i = 0; i < missing_count; i++)
+		if (set->missing[i] == index)
+			return 0;
+
+	CHECK(missing_count < MISS_COUNT, fail);
+	set->missing[missing_count++] = index;
+	return 0;
+
+fail:
+	return 1;
+}
+
+struct example *read_example(FILE *file, int learning,
+		const struct description *descr,
+		struct example_set *set)
+{
+	struct example *ex;
+	char *tmp = NULL;
+	int i, l;
+
+	ex = calloc(1, sizeof(*ex));
+	ex->attr_ids = calloc(descr->M, sizeof(ex->attr_ids[0]));
+
+	for (i = 0; i < descr->M; i++) {
+		CHECK(fscanf(file, "%ms", &tmp) == 1, fail);
+		if (strncmp(tmp, "?", 1) == 0)
+			CHECK(record_missing(i, set) == 0, fail);
+		else {
+			error_in_set = 0;
+			ex->attr_ids[i] = get_index_from_descr(tmp,
+					descr->attribs[i]);
+			CHECK(error_in_set == 0, fail);
+		}
+		tmp = free_and_set_NULL(tmp);
+	}
+
+	if (learning) {
+		CHECK(fscanf(file, "%ms", &tmp) == 1, fail);
+		l = strlen(tmp);
+		for (i = 0; i < descr->K; i++)
+			if (strncmp(tmp, descr->classes[i], l) == 0) {
+				ex->class_id = i;
+				break;
+			}
+		CHECK(i < descr->K, fail);
+		tmp = free_and_set_NULL(tmp);
+	}
+
+	return ex;
+
+fail:
+	free_example(ex);
+	free_and_set_NULL(ex);
+	return free_and_set_NULL(tmp);
+}
+
 void free_attribute(struct attribute *ptr)
 {
 	int i;
@@ -134,6 +260,28 @@ void free_description(struct description *ptr)
 		free_and_set_NULL(ptr->attribs[i]);
 	}
 	free(ptr->attribs);
+}
+
+void free_example_set(struct example_set *ptr)
+{
+	int i;
+
+	if (ptr->examples == NULL)
+		return;
+
+	for (i = 0; i < ptr->N; i++) {
+		free_example(ptr->examples[i]);
+		free_and_set_NULL(ptr->examples[i]);
+	}
+	free(ptr->examples);
+}
+
+void free_example(struct example *ptr)
+{
+	if (ptr == NULL)
+		return;
+
+	free_and_set_NULL(ptr->attr_ids);
 }
 
 int set_error(int err)

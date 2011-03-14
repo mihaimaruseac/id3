@@ -23,15 +23,23 @@ int id3_learn(int num_handle, int missing_handle, FILE *attr_file, FILE
 		*learn_file, FILE *id3_file)
 {
 	struct description *descr;
+	struct example_set *lset;
 
 	descr = read_description_file(attr_file);
 	CHECK(descr != NULL, nodescr);
+	lset = read_learning_file(learn_file, descr);
+	CHECK(lset != NULL, nolset);
 
 	free_description(descr);
 	free_and_set_NULL(descr);
+	free_example_set(lset);
+	free_and_set_NULL(lset);
 
 	return EXIT_SUCCESS;
 
+nolset:
+	free_description(descr);
+	free_and_set_NULL(descr);
 nodescr:
 	return set_error(EINVAL); /* invalid file received */
 }

@@ -119,7 +119,7 @@ struct example {
 	/** ID of each attribute (as given by struct description and struct
 	 * attribute)
 	 */
-	int **attr_ids;
+	int *attr_ids;
 	/** Flag for missing values */
 	int miss;
 };
@@ -152,10 +152,12 @@ struct description *read_description_file(FILE *file);
  * Wrapper function around read_set which is used to read both the learning
  * set and the test set.
  *
- * @param file Learning set description file
+ * @param file Learning set description file.
+ * @param descr The description of the entire model.
  * @return The learning set.
  */
-struct example_set *read_learning_file(FILE *file);
+struct example_set *read_learning_file(FILE *file,
+		const struct description *descr);
 
 /**
  * @brief Reads the testing set for one problem.
@@ -164,9 +166,11 @@ struct example_set *read_learning_file(FILE *file);
  * set and the test set.
  *
  * @param file Learning set description file
+ * @param descr The description of the entire model.
  * @return The learning set.
  */
-struct example_set *read_testing_file(FILE *file);
+struct example_set *read_testing_file(FILE *file,
+		const struct description *descr);
 
 /**
  * @brief Reads a set to use when learning (learning = 1) or classifying
@@ -178,9 +182,11 @@ struct example_set *read_testing_file(FILE *file);
  *
  * @param file Description file
  * @param learning Flag describing what to expect
+ * @param descr The description of the entire model.
  * @return The required set.
  */
-static struct example_set *read_set(FILE *file, int learning);
+static struct example_set *read_set(FILE *file, int learning,
+		const struct description *descr);
 
 /**
  * @brief Reads one attribute from the description file.
@@ -199,9 +205,33 @@ static struct attribute *read_attribute(FILE *file);
  *
  * @param file File containing the example
  * @param learning Flag describing what to expect (see read_set)
+ * @param descr The description of the entire model.
+ * @param set The example set from which this example is part of.
  * @return The read example.
  */
-static struct example *read_example(FILE *file, int learning);
+static struct example *read_example(FILE *file, int learning,
+		const struct description *descr,
+		struct example_set *set);
+
+/**
+ * @brief Records a new missing value from the learning set.
+ *
+ * @param index Index of attribute
+ * @param set Example set in which to record the missing value
+ * @return 0 if everything is ok, 1 otherwise
+ */
+static int record_missing(int index, struct example_set *set);
+
+/**
+ * @brief Gets the mapping between the read attribute value and the indexes
+ * used in the example_set and example structures.
+ *
+ * @param string The read string
+ * @param attr The corresponding attribute
+ * @return The index from the mapping
+ */
+static int get_index_from_descr(const char *string,
+		const struct attribute *attr);
 
 /**
  * @brief Frees the memory allocated to one description.
