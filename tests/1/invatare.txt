@@ -12,3 +12,4 @@ rain 75 80 false C1
 sunny 75 70 true C1
 overcast 72 90 true C1
 overcast 81 75 false C1
+rain 71 80 true C2
