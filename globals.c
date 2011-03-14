@@ -189,9 +189,10 @@ struct example *read_example(FILE *file, int learning,
 
 	for (i = 0; i < descr->M; i++) {
 		CHECK(fscanf(file, "%ms", &tmp) == 1, fail);
-		if (strncmp(tmp, "?", 1) == 0)
+		if (strncmp(tmp, "?", 1) == 0) {
+			ex->miss |= 1 << missing_count;
 			CHECK(record_missing(i, set) == 0, fail);
-		else {
+		} else {
 			error_in_set = 0;
 			ex->attr_ids[i] = get_index_from_descr(tmp,
 					descr->attribs[i]);
