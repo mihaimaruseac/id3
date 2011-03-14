@@ -32,8 +32,17 @@
  * @param id3_file Filename used to output the classifier in a raw form.
  * @return The exit code for the learning process.
  */
-int id3_learn(int num_handle, int missing_handle, FILE *attr_file, FILE
-		*learn_file, FILE *id3_file);
+int id3_learn_bootstrap_file(int num_handle, int missing_handle, FILE *attr_file,
+		FILE *learn_file, FILE *id3_file);
+
+/**
+ * @brief The learning process.
+ *
+ * @param descr The description of the problem.
+ * @param lset The learning set.
+ */
+static void id3_learn(const struct description *descr,
+		const struct example_set *lset);
 
 #endif
 

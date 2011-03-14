@@ -139,7 +139,8 @@ static void learning_instance(int argc, char **argv)
 	}
 	free(id3_file);
 
-	status = id3_learn(num_handle, missing_handle, attr, learn, id3);
+	status = id3_learn_bootstrap_file(num_handle, missing_handle, attr,
+			learn, id3);
 	if (status)
 		perror("Error while learning");
 

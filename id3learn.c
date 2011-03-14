@@ -19,8 +19,8 @@
 #include "globals.h"
 #include "id3learn.h"
 
-int id3_learn(int num_handle, int missing_handle, FILE *attr_file, FILE
-		*learn_file, FILE *id3_file)
+int id3_learn_bootstrap_file(int num_handle, int missing_handle,
+		FILE *attr_file, FILE *learn_file, FILE *id3_file)
 {
 	struct description *descr;
 	struct example_set *lset;
@@ -29,6 +29,9 @@ int id3_learn(int num_handle, int missing_handle, FILE *attr_file, FILE
 	CHECK(descr != NULL, nodescr);
 	lset = read_learning_file(learn_file, descr);
 	CHECK(lset != NULL, nolset);
+
+	/* start the learning process */
+	id3_learn(descr, lset);
 
 	free_description(descr);
 	free_and_set_NULL(descr);
@@ -42,5 +45,10 @@ nolset:
 	free_and_set_NULL(descr);
 nodescr:
 	return set_error(EINVAL); /* invalid file received */
+}
+
+void id3_learn(const struct description *descr,
+		const struct example_set *lset)
+{
 }
 
