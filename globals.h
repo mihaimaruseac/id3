@@ -214,11 +214,61 @@ static struct example *read_example(FILE *file, int learning,
 		struct example_set *set);
 
 /**
+ * @brief Writes the description to a file.
+ *
+ * File can be standard output or anything else.
+ *
+ * @param descr Description to write
+ * @param file File to write to.
+ */
+void write_description(const struct description *descr, FILE *file);
+
+/**
+ * @brief Writes an attribute to a file.
+ *
+ * @param attr Attribute to be written.
+ * @param file File to write to.
+ */
+static void write_attribute(const struct attribute *attr, FILE *file);
+
+/**
+ * @brie Writes an example set to a file.
+ *
+ * @param set Set to write.
+ * @param descr Description to use while writing.
+ * @param file File to write to.
+ */
+void write_set(const struct example_set *set,
+		const struct description *descr,
+		FILE *file);
+
+/**
+ * @brief Writes an example to a file.
+ *
+ * @param ex Example to be written.
+ * @param descr Description to use while writing.
+ * @param file File to write to.
+ */
+static void write_example(const struct example *ex,
+		const struct description *descr,
+		FILE *file);
+
+/**
+ * @brief Tests if an example contains a missing value on the current
+ * position.
+ *
+ * @param ex Example to test
+ * @param index Where to look
+ * @return 1 if missing, 0 otherwise.
+ */
+static int missing_value(const struct example *ex, int index);
+
+/**
  * @brief Records a new missing value from the learning set.
  *
  * @param index Index of attribute
  * @param set Example set in which to record the missing value
- * @return 0 if everything is ok, 1 otherwise
+ * @return Change in flag to record missing value or 0 on error
  */
 static int record_missing(int index, struct example_set *set);
 

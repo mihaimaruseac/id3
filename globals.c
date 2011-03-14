@@ -27,6 +27,12 @@ static int error_in_set;
  */
 static int missing_count;
 
+/**
+ * @brief Local global variable used to detect the missing values while
+ * printing.
+ */
+static int missing_indexes[MISS_COUNT];
+
 void *free_and_set_NULL(void *ptr)
 {
 	if (ptr)
@@ -166,14 +172,14 @@ int record_missing(int index, struct example_set *set)
 
 	for (i = 0; i < missing_count; i++)
 		if (set->missing[i] == index)
-			return 0;
+			return 1 << i;
 
 	CHECK(missing_count < MISS_COUNT, fail);
 	set->missing[missing_count++] = index;
-	return 0;
+	return 1 << (missing_count - 1);
 
 fail:
-	return 1;
+	return 0;
 }
 
 struct example *read_example(FILE *file, int learning,
@@ -190,8 +196,9 @@ struct example *read_example(FILE *file, int learning,
 	for (i = 0; i < descr->M; i++) {
 		CHECK(fscanf(file, "%ms", &tmp) == 1, fail);
 		if (strncmp(tmp, "?", 1) == 0) {
-			ex->miss |= 1 << missing_count;
-			CHECK(record_missing(i, set) == 0, fail);
+			l = record_missing(i, set);
+			CHECK(l != 0, fail);
+			ex->miss |= l;
 		} else {
 			error_in_set = 0;
 			ex->attr_ids[i] = get_index_from_descr(tmp,
@@ -219,6 +226,77 @@ fail:
 	free_example(ex);
 	free_and_set_NULL(ex);
 	return free_and_set_NULL(tmp);
+}
+
+void write_attribute(const struct attribute *attr, FILE *file)
+{
+	int i;
+
+	fprintf(file, "%s ", attr->name);
+	if (attr->type == NUMERIC) {
+		fprintf(file, "numeric\n");
+		return;
+	}
+
+	fprintf(file, "discret %d", attr->C);
+	for (i = 0; i < attr->C; i++)
+		fprintf(file, " %s", (char *)attr->ptr[i]);
+	fprintf(file, "\n");
+}
+
+void write_description(const struct description *descr, FILE *file)
+{
+	int i;
+
+	fprintf(file, "%d\n", descr->K);
+	fprintf(file, "%s", descr->classes[0]);
+	for (i = 1; i < descr->K; i++)
+		fprintf(file, " %s", descr->classes[i]);
+	fprintf(file, "\n%d\n", descr->M);
+	for (i = 0; i < descr->M; i++)
+		write_attribute(descr->attribs[i], file);
+}
+
+void write_set(const struct example_set *set,
+	const struct description *descr,
+	FILE *file)
+{
+	int i;
+
+	for (i = 0; i < MISS_COUNT; i++)
+		missing_indexes[i] = set->missing[i];
+
+	fprintf(file, "%d\n", set->N);
+	for (i = 0; i < set->N; i++)
+		write_example(set->examples[i], descr, file);
+}
+
+int missing_value(const struct example *ex, int index)
+{
+	int i;
+
+	for (i = 0; i < MISS_COUNT; i++)
+		if (index == missing_indexes[i] && MISS_INDEX(ex->miss, i))
+			return 1;
+	return 0;
+}
+
+void write_example(const struct example *ex,
+	const struct description *descr,
+	FILE *file)
+{
+	int i;
+
+	for (i = 0; i < descr->M; i++)
+		if (missing_value(ex, i))
+			fprintf(file, "? ", i, ex->miss);
+		else if (descr->attribs[i]->type == NUMERIC)
+			fprintf(file, "%d ", ex->attr_ids[i]);
+		else
+			fprintf(file, "%s ",
+				(char *)descr->attribs[i]->
+				ptr[ex->attr_ids[i]]);
+	fprintf(file, "%s\n", descr->classes[ex->class_id]);
 }
 
 void free_attribute(struct attribute *ptr)

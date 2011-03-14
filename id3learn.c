@@ -50,5 +50,7 @@ nodescr:
 void id3_learn(const struct description *descr,
 		const struct example_set *lset)
 {
+	write_description(descr, stdout);
+	write_set(lset, descr, stdout);
 }
 
