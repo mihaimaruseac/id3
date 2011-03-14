@@ -20,12 +20,12 @@
  * @brief Local global variable used to detect errors in example or testing
  * sets.
  */
-static int error_in_set = 0;
+static int error_in_set;
 
 /**
  * @brief Local variable used to detect the missing value attributes count.
  */
-static int missing_count = 0;
+static int missing_count;
 
 void *free_and_set_NULL(void *ptr)
 {
