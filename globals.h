@@ -66,15 +66,16 @@ enum attr_type {
 /**
  * @brief Structure used to represent a single attribute.
  *
- * If the attribute is numeric, the ptr vector will not be used. It would have
- * been relevant only when the structure would be used in a real example: it
- * would contain an index into the example data, sorted by the increasing
- * values of the attribute. However, at a later stage in the learning process,
- * the index would have to be recomputed again by a slower process overall
- * than the sorting of relevant samples using quicksort.
+ * If the attribute is numeric, the ptr vector will be used only after reading
+ * the learning example. It will be an index into the example data, used to
+ * sort in ascending order the example data by this attribute. If at a later
+ * time the example is splitted, the index will remain the same but some of
+ * the values will not be relevant for that example. However, code doing this
+ * will take care of that, thus, it is not a concern right now.
  *
  * Otherwise, the ptr will point to a vector of names, used for the discrete
- * values.
+ * values. Each name can be obtained by converting the integer to a char* and
+ * looking at the resulting memory location.
  */
 struct attribute {
 	/** Name of the attribute */
@@ -82,7 +83,7 @@ struct attribute {
 	/** Type of attribute */
 	enum attr_type type;
 	/** Type-dependent pointer (see description) */
-	void **ptr;
+	int *ptr;
 	/** Length of vector pointed to by ptr */
 	int C;
 };
@@ -125,6 +126,12 @@ struct example {
 	int *attr_ids;
 	/** Flag for missing values */
 	int miss;
+	/** This flag may be used to represent the fact that this example
+	 * should be discarded in one loop. It is the user's job to update
+	 * this flag to relevant values. The only guarantee is that this flag
+	 * is set to 0 when this structure is created.
+	 */
+	int filter;
 };
 
 /**
@@ -285,6 +292,18 @@ static int record_missing(int index, struct example_set *set);
  */
 static int get_index_from_descr(const char *string,
 		const struct attribute *attr);
+
+/**
+ * @brief Deletes the filtering information associated by each example from
+ * the example set.
+ *
+ * As you recall (see the struct example documentation), the filter flag can
+ * be used to implement filtering of examples from the example set in a opaque
+ * way to other users of the same structure. However, to ensure consistency,
+ * each user must call this function to reset the filter value to the original
+ * value.
+ */
+void clear_filter_info(struct example_set *lset);
 
 /**
  * @brief Frees the memory allocated to one description.

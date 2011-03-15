@@ -55,5 +55,18 @@ static void id3_learn(const struct description *descr,
 static void id3_treat_missing(const struct description *descr,
 		struct example_set *lset, int missing_handle);
 
+/**
+ * @brief Builds indexes for numeric attributes.
+ *
+ * The indexes are used to implement handling of numeric attributes and to
+ * sort the input set, if needed. Subsets of the input will keep the same
+ * index, although some values may be missing in them.
+ *
+ * @param descr The description of the problem.
+ * @param lset The learning set
+ */
+static void id3_build_index(const struct description *descr,
+		const struct example_set *lset);
+
 #endif
 

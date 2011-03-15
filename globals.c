@@ -66,7 +66,7 @@ struct attribute *read_attribute(FILE *file)
 
 	for (i = 0; i < attr->C; i++) {
 		CHECK(fscanf(file, "%ms", &tmp) == 1, fail);
-		attr->ptr[i] = strdup(tmp);
+		attr->ptr[i] = (int)strdup(tmp);
 		tmp = free_and_set_NULL(tmp);
 	}
 
@@ -159,7 +159,7 @@ int get_index_from_descr(const char *string,
 
 	l = strlen(string);
 	for (index = 0; index < attr->C; index++)
-		if (strncmp(string, attr->ptr[index], l) == 0)
+		if (strncmp(string, (char *)attr->ptr[index], l) == 0)
 			return index;
 fail:
 	error_in_set = 1;
@@ -299,6 +299,14 @@ void write_example(const struct example *ex,
 	fprintf(file, "%s\n", descr->classes[ex->class_id]);
 }
 
+void clear_filter_info(struct example_set *lset)
+{
+	int i;
+
+	for (i = 0; i < lset->N; i++)
+		lset->examples[i]->filter = 0;
+}
+
 void free_attribute(struct attribute *ptr)
 {
 	int i;
@@ -314,7 +322,7 @@ void free_attribute(struct attribute *ptr)
 
 	CHECK(ptr->type != NUMERIC, ok);
 	for (i = 0; i < ptr->C; i++)
-		free_and_set_NULL(ptr->ptr[i]);
+		free_and_set_NULL((char *)ptr->ptr[i]);
 
 ok:
 	free_and_set_NULL(ptr->ptr);

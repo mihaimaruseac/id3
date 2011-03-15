@@ -33,6 +33,8 @@ int id3_learn_bootstrap_file(int num_handle, int missing_handle,
 
 	/* fill in missing arguments */
 	id3_treat_missing(descr, lset, missing_handle);
+	/* built indexes for numeric arguments */
+	id3_build_index(descr, lset);
 	/* start the learning process */
 	id3_learn(descr, lset, num_handle);
 
@@ -54,8 +56,10 @@ void id3_learn(const struct description *descr,
 		const struct example_set *lset,
 		int num_handle)
 {
-/*	write_description(descr, stdout);*/
+#if 0
+	write_description(descr, stdout);
 	write_set(lset, descr, stdout);
+#endif
 }
 
 void id3_treat_missing(const struct description *descr,
@@ -98,3 +102,31 @@ void id3_treat_missing(const struct description *descr,
 	}
 }
 
+void id3_build_index(const struct description *descr,
+		const struct example_set *lset)
+{
+	int i, j, k, ii, jj;
+
+	for (i = 0; i < descr->M; i++) {
+		if (descr->attribs[i]->type != NUMERIC)
+			continue;
+		descr->attribs[i]->C = lset->N;
+		descr->attribs[i]->ptr = calloc(lset->N,
+				sizeof(descr->attribs[i]->ptr));
+
+		for (j = 0; j < lset->N; j++)
+			descr->attribs[i]->ptr[j] = j;
+
+		/* sorting in place in O(N^2) */
+		for (j = 0; j < lset->N; j++)
+			for (k = j + 1; k < lset->N; k++) {
+				ii = descr->attribs[i]->ptr[j];
+				jj = descr->attribs[i]->ptr[k];
+				if (lset->examples[ii]->attr_ids[i] >
+					lset->examples[jj]->attr_ids[i]) {
+					descr->attribs[i]->ptr[k] = ii;
+					descr->attribs[i]->ptr[j] = jj;
+				}
+			}
+	}
+}
