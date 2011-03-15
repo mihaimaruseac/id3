@@ -18,35 +18,45 @@
 #include "globals.h"
 #include "id3missing.h"
 
-void numeric_maj_fill_missing(struct example_set *lset, const int attr_index,
+void numeric_maj_fill_missing(const struct description *descr,
+		struct example_set *lset, const int attr_index,
 		const int miss_index)
 {
+	fprintf(stderr, "TODO%d\n", __LINE__);
 }
 
-void numeric_prb_fill_missing(struct example_set *lset, const int attr_index,
+void numeric_prb_fill_missing(const struct description *descr,
+		struct example_set *lset, const int attr_index,
 		const int miss_index)
 {
+	fprintf(stderr, "TODO%d\n", __LINE__);
 }
 
 void numeric_id3_fill_missing(const struct description *descr,
 		struct example_set *lset, const int attr_index,
 		const int miss_index)
 {
+	fprintf(stderr, "TODO%d\n", __LINE__);
 }
 
-void discrete_maj_fill_missing(struct example_set *lset, const int attr_index,
+void discrete_maj_fill_missing(const struct description *descr,
+		struct example_set *lset, const int attr_index,
 		const int miss_index)
 {
+	fprintf(stderr, "TODO%d\n", __LINE__);
 }
 
-void discrete_prb_fill_missing(struct example_set *lset, const int attr_index,
+void discrete_prb_fill_missing(const struct description *descr,
+		struct example_set *lset, const int attr_index,
 		const int miss_index)
 {
+	fprintf(stderr, "TODO%d\n", __LINE__);
 }
 
 void discrete_id3_fill_missing(const struct description *descr,
 		struct example_set *lset, const int attr_index,
 		const int miss_index)
 {
+	fprintf(stderr, "TODO%d\n", __LINE__);
 }
 

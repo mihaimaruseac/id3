@@ -10,8 +10,7 @@
  * attributes from the description.
  *
  * @section QUOTE
- * A year spent in artificial intelligence is enough to make one believe in
- * God. (Alan Perlis)
+ * Intelligence is what you use when you don't know what to do. (Jean Piaget)
  *
  * @bug No known bugs.
  */
@@ -23,21 +22,25 @@
  * @brief Treats missing numeric attributes by filling with the average of the
  * other values.
  *
+ * @param descr The description
  * @param lset The learning set
  * @param attr_index Index of attribute with missing values
  * @param miss_index Index in missing structure.
  */
-void numeric_maj_fill_missing(struct example_set *lset, const int attr_index,
+void numeric_maj_fill_missing(const struct description *descr,
+		struct example_set *lset, const int attr_index,
 		const int miss_index);
 
 /**
  * @brief Treats missing numeric attributes by using probability theory.
  *
+ * @param descr The description
  * @param lset The learning set
  * @param attr_index Index of attribute with missing values
  * @param miss_index Index in missing structure.
  */
-void numeric_prb_fill_missing(struct example_set *lset, const int attr_index,
+void numeric_prb_fill_missing(const struct description *descr,
+		struct example_set *lset, const int attr_index,
 		const int miss_index);
 
 /**
@@ -59,21 +62,25 @@ void numeric_id3_fill_missing(const struct description *descr,
  * @brief Treats missing discrete attributes by filling with the average of the
  * other values.
  *
+ * @param descr The description
  * @param lset The learning set
  * @param attr_index Index of attribute with missing values
  * @param miss_index Index in missing structure.
  */
-void discrete_maj_fill_missing(struct example_set *lset, const int attr_index,
+void discrete_maj_fill_missing(const struct description *descr,
+		struct example_set *lset, const int attr_index,
 		const int miss_index);
 
 /**
  * @brief Treats missing discrete attributes by using probability theory.
  *
+ * @param descr The description
  * @param lset The learning set
  * @param attr_index Index of attribute with missing values
  * @param miss_index Index in missing structure.
  */
-void discrete_prb_fill_missing(struct example_set *lset, const int attr_index,
+void discrete_prb_fill_missing(const struct description *descr,
+		struct example_set *lset, const int attr_index,
 		const int miss_index);
 
 /**

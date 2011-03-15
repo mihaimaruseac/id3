@@ -68,26 +68,31 @@ void id3_treat_missing(const struct description *descr,
 		if (descr->attribs[index]->type == NUMERIC)
 			switch (missing_handle) {
 			case MISS_MAJ:
-				numeric_maj_fill_missing(lset, index, i);
+				numeric_maj_fill_missing(descr, lset,
+						index, i);
 				break;
 			case MISS_PRB:
-				numeric_prb_fill_missing(lset, index, i);
+				numeric_prb_fill_missing(descr, lset,
+						index, i);
 				break;
 			case MISS_ID3:
-				numeric_id3_fill_missing(descr, lset, index, i);
+				numeric_id3_fill_missing(descr, lset,
+						index, i);
 				break;
 			}
 		else
 			switch (missing_handle) {
 			case MISS_MAJ:
-				discrete_maj_fill_missing(lset, index, i);
+				discrete_maj_fill_missing(descr, lset,
+						index, i);
 				break;
 			case MISS_PRB:
-				discrete_prb_fill_missing(lset, index, i);
+				discrete_prb_fill_missing(descr, lset,
+						index, i);
 				break;
 			case MISS_ID3:
-				discrete_id3_fill_missing(descr, lset, index,
-						i);
+				discrete_id3_fill_missing(descr, lset,
+						index, i);
 				break;
 			}
 	}
