@@ -232,7 +232,7 @@ void write_description(const struct description *descr, FILE *file);
 static void write_attribute(const struct attribute *attr, FILE *file);
 
 /**
- * @brie Writes an example set to a file.
+ * @brief Writes an example set to a file.
  *
  * @param set Set to write.
  * @param descr Description to use while writing.

@@ -1,5 +1,5 @@
 /*!
- * @file fillmissing.c
+ * @file id3missing.c
  * @brief Treating of missing values.
  * @author Mihai Maruseac (mihai@rosedu.org)
  *
@@ -45,7 +45,50 @@ void numeric_prb_fill_missing(const struct description *descr,
 		struct example_set *lset, const int attr_index,
 		const int miss_index)
 {
-	fprintf(stderr, "TODO%d\n", __LINE__);
+	int K, i, j, max, imax, c, **counts, C, *vals, ind, v;
+
+	K = descr->K;
+	C = lset->N;
+	counts = calloc(K, sizeof(counts[0]));
+	for (i = 0; i < K; i++)
+		counts[i] = calloc(C, sizeof(counts[i][0]));
+	vals = calloc(C, sizeof(vals[0]));
+
+	C = 0;
+	for (i = 0; i < lset->N; i++) {
+		if (MISS_INDEX(lset->examples[i]->miss, miss_index))
+			continue;
+		c = lset->examples[i]->class_id;
+		v = lset->examples[i]->attr_ids[attr_index];
+		for (ind = 0; ind < C; ind++)
+			if (vals[ind] == v) {
+				counts[c][ind]++;
+				break;
+			}
+		if (ind < C)
+			continue;
+		counts[c][C]++;
+		vals[C++] = v;
+	}
+
+	for (i = 0; i < lset->N; i++)
+		if (MISS_INDEX(lset->examples[i]->miss, miss_index)) {
+			c = lset->examples[i]->class_id;
+			imax = 0;
+			max = counts[c][imax];
+			for (j = 1; j < C; j++)
+				if (max < counts[c][j]) {
+					max = counts[c][j];
+					imax = j;
+				}
+			lset->examples[i]->attr_ids[attr_index] = vals[imax];
+			lset->examples[i]->miss ^= 1 << miss_index;
+		}
+
+	for (i = 0; i < K; i++)
+		free(counts[i]);
+	free(counts);
+	free(vals);
 }
 
 void numeric_id3_fill_missing(const struct description *descr,
@@ -90,7 +133,38 @@ void discrete_prb_fill_missing(const struct description *descr,
 		struct example_set *lset, const int attr_index,
 		const int miss_index)
 {
-	fprintf(stderr, "TODO%d\n", __LINE__);
+	int K, C, i, **counts, c, j, max, imax;
+
+	K = descr->K;
+	C = descr->attribs[attr_index]->C;
+	counts = calloc(K, sizeof(counts[0]));
+	for (i = 0; i < K; i++)
+		counts[i] = calloc(C, sizeof(counts[i][0]));
+
+	for (i = 0; i < lset->N; i++) {
+		if (MISS_INDEX(lset->examples[i]->miss, miss_index))
+			continue;
+		c = lset->examples[i]->class_id;
+		counts[c][lset->examples[i]->attr_ids[attr_index]]++;
+	}
+
+	for (i = 0; i < lset->N; i++)
+		if (MISS_INDEX(lset->examples[i]->miss, miss_index)) {
+			c = lset->examples[i]->class_id;
+			imax = 0;
+			max = counts[c][imax];
+			for (j = 1; j < C; j++)
+				if (max < counts[c][j]) {
+					max = counts[c][j];
+					imax = j;
+				}
+			lset->examples[i]->attr_ids[attr_index] = imax;
+			lset->examples[i]->miss ^= 1 << miss_index;
+		}
+
+	for (i = 0; i < K; i++)
+		free(counts[i]);
+	free(counts);
 }
 
 void discrete_id3_fill_missing(const struct description *descr,
