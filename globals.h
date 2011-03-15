@@ -66,9 +66,12 @@ enum attr_type {
 /**
  * @brief Structure used to represent a single attribute.
  *
- * If the attribute is numeric, the ptr vector will be relevant only when the
- * structure is used in a real example: it will contain an index into the
- * example data, sorted by the increasing values of the attribute.
+ * If the attribute is numeric, the ptr vector will not be used. It would have
+ * been relevant only when the structure would be used in a real example: it
+ * would contain an index into the example data, sorted by the increasing
+ * values of the attribute. However, at a later stage in the learning process,
+ * the index would have to be recomputed again by a slower process overall
+ * than the sorting of relevant samples using quicksort.
  *
  * Otherwise, the ptr will point to a vector of names, used for the discrete
  * values.
