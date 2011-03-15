@@ -22,7 +22,23 @@ void numeric_maj_fill_missing(const struct description *descr,
 		struct example_set *lset, const int attr_index,
 		const int miss_index)
 {
-	fprintf(stderr, "TODO%d\n", __LINE__);
+	int sum, count, i;
+
+	count = 0;
+	sum = 0;
+	for (i = 0; i < lset->N; i++) {
+		if (MISS_INDEX(lset->examples[i]->miss, miss_index))
+			continue;
+		sum += lset->examples[i]->attr_ids[attr_index];
+		count += 1;
+	}
+
+	sum /= count;
+	for (i = 0; i < lset->N; i++)
+		if (MISS_INDEX(lset->examples[i]->miss, miss_index)) {
+			lset->examples[i]->attr_ids[attr_index] = sum;
+			lset->examples[i]->miss ^= 1 << miss_index;
+		}
 }
 
 void numeric_prb_fill_missing(const struct description *descr,
@@ -43,7 +59,31 @@ void discrete_maj_fill_missing(const struct description *descr,
 		struct example_set *lset, const int attr_index,
 		const int miss_index)
 {
-	fprintf(stderr, "TODO%d\n", __LINE__);
+	int *counts, i, max, imax, C;
+
+	C = descr->attribs[attr_index]->C;
+	counts = calloc(C, sizeof(counts[0]));
+	for (i = 0; i < lset->N; i++) {
+		if (MISS_INDEX(lset->examples[i]->miss, miss_index))
+			continue;
+		counts[lset->examples[i]->attr_ids[attr_index]]++;
+	}
+
+	imax = 0;
+	max = counts[imax];
+	for (i = 1; i < C; i++)
+		if (max < counts[i]) {
+			max = counts[i];
+			imax = i;
+		}
+
+	for (i = 0; i < lset->N; i++)
+		if (MISS_INDEX(lset->examples[i]->miss, miss_index)) {
+			lset->examples[i]->attr_ids[attr_index] = imax;
+			lset->examples[i]->miss ^= 1 << miss_index;
+		}
+
+	free(counts);
 }
 
 void discrete_prb_fill_missing(const struct description *descr,
