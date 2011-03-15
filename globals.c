@@ -289,7 +289,7 @@ void write_example(const struct example *ex,
 
 	for (i = 0; i < descr->M; i++)
 		if (missing_value(ex, i))
-			fprintf(file, "? ", i, ex->miss);
+			fprintf(file, "? ");
 		else if (descr->attribs[i]->type == NUMERIC)
 			fprintf(file, "%d ", ex->attr_ids[i]);
 		else

@@ -36,13 +36,24 @@ int id3_learn_bootstrap_file(int num_handle, int missing_handle,
 		FILE *attr_file, FILE *learn_file, FILE *id3_file);
 
 /**
- * @brief The learning process.
+ * @brief The learning process (wrapper function).
  *
  * @param descr The description of the problem.
  * @param lset The learning set.
+ * @param num_handle How to handle numeric arguments.
  */
 static void id3_learn(const struct description *descr,
-		const struct example_set *lset);
+		const struct example_set *lset, int num_handle);
+
+/**
+ * @brief Fills the missing spots.
+ *
+ * @param descr The description of the problem.
+ * @param lset The learning set.
+ * @param missing_handle How to handle missing arguments.
+ */
+static void id3_treat_missing(const struct description *descr,
+		struct example_set *lset, int missing_handle);
 
 #endif
 
