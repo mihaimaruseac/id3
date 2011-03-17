@@ -38,12 +38,17 @@ int id3_learn_bootstrap_file(int num_handle, int missing_handle,
 /**
  * @brief The learning process (wrapper function).
  *
+ * This function is recursive. The ending condition is done by the tag
+ * variable, which is used to filter the remaining examples (and to create the
+ * id3 tree nodes).
+ *
  * @param descr The description of the problem.
  * @param lset The learning set.
  * @param num_handle How to handle numeric arguments.
+ * @param tag Tag used to filter the learning set.
  */
 static void id3_learn(const struct description *descr,
-		const struct example_set *lset, int num_handle);
+		const struct example_set *lset, int num_handle, int tag);
 
 /**
  * @brief Fills the missing spots.
@@ -67,6 +72,58 @@ static void id3_treat_missing(const struct description *descr,
  */
 static void id3_build_index(const struct description *descr,
 		const struct example_set *lset);
+
+/**
+ * @brief Computes the count of eamples having a specified filter value.
+ *
+ * @param lset The learning set
+ * @param tag The filter value
+ * @return Count of examples with specified tag
+ */
+static int id3_filtered_count(const struct example_set *lset, int tag);
+
+/**
+ * @brief Computes the information given by a set of examples (I_{DT})
+ *
+ * @param descr The description of the problem
+ * @param lset The learning set
+ * @param tag Tag to filter the learning set
+ * @param count Count of filtered values
+ * @return I_{DT}
+ */
+static double id3_I_decision_tree(const struct description *descr,
+		const struct example_set *lset, int tag, int count);
+
+/**
+ * @brief Computes the expected average information obtained by splitting on a
+ * numeric attribute.
+ *
+ * @param descr The description of the problem
+ * @param lset The learning set
+ * @param index Index of attribute
+ * @param num_handle How to handle numeric values
+ * @param tag Tag to filter the learning set
+ * @param count Count of filtered values
+ * @return E_A
+ */
+static double test_split_numeric(const struct description *descr,
+		const struct example_set *lset,
+		int index, int num_handle, int tag, int count);
+
+/**
+ * @brief Computes the expected average information obtained by splitting on a
+ * discrete attribute.
+ *
+ * @param descr The description of the problem
+ * @param lset The learning set
+ * @param index Index of attribute
+ * @param tag Tag to filter the learning set
+ * @param count Count of filtered values
+ * @return E_A
+ */
+static double test_split_discrete(const struct description *descr,
+		const struct example_set *lset,
+		int index, int tag, int count);
 
 #endif
 

@@ -34,6 +34,9 @@ void numeric_maj_fill_missing(const struct description *descr,
 /**
  * @brief Treats missing numeric attributes by using probability theory.
  *
+ * Because the numitors in the formulas are always constant, this function
+ * uses only integer operations to give better results.
+ *
  * @param descr The description
  * @param lset The learning set
  * @param attr_index Index of attribute with missing values
@@ -73,6 +76,9 @@ void discrete_maj_fill_missing(const struct description *descr,
 
 /**
  * @brief Treats missing discrete attributes by using probability theory.
+ *
+ * Because the numitors in the formulas are always constant, this function
+ * uses only integer operations to give better results.
  *
  * @param descr The description
  * @param lset The learning set
