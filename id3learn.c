@@ -21,11 +21,18 @@
 #include "id3math.h"
 #include "id3missing.h"
 
+/**
+ * @brief
+ * Static value used to remember the last tag used.
+ */
+static int last_tag;
+
 int id3_learn_bootstrap_file(int num_handle, int missing_handle,
 		FILE *attr_file, FILE *learn_file, FILE *id3_file)
 {
 	struct description *descr;
 	struct example_set *lset;
+	struct classifier *cls;
 
 	descr = read_description_file(attr_file);
 	CHECK(descr != NULL, nodescr);
@@ -39,7 +46,7 @@ int id3_learn_bootstrap_file(int num_handle, int missing_handle,
 	/* discretization for numeric arguments */
 	id3_discretization(descr, lset, num_handle);
 	/* start the learning process */
-	id3_learn(descr, lset, num_handle, 0);
+	cls = id3_learn(descr, lset, 0);
 
 	free_description(descr);
 	free_and_set_NULL(descr);
@@ -171,9 +178,8 @@ double test_split_discrete(const struct description *descr,
 	return id3e;
 }
 
-void id3_learn(const struct description *descr,
-		const struct example_set *lset,
-		int num_handle, int tag)
+struct classifier *id3_learn(const struct description *descr,
+		const struct example_set *lset, int tag)
 {
 	double iad, gain, gbest, exp;
 	int i, ibest, count;
@@ -197,6 +203,116 @@ void id3_learn(const struct description *descr,
 		}
 	}
 	fprintf(stderr, "Split on %d\n", ibest);
+
+	return split_on(descr, lset, tag, ibest);
+}
+
+struct classifier *build_numeric_classifier(const struct description *descr,
+		const struct example_set *lset, struct classifier *cls,
+		int index)
+{
+	int i, cc, kc;
+
+	kc = 1;
+	cc = -1;
+	last_tag++;
+	for (i = 0; i < lset->N; i++) {
+		SKIPIF(lset->examples[i]->filter != cls->tag);
+		SKIPIF(index != cls->C - 1 &&
+			lset->examples[i]->attr_ids[cls->id] >=
+				cls->values[index]);
+		SKIPIF(index && lset->examples[i]->attr_ids[cls->id]
+				< cls->values[index - 1]);
+		if (lset->examples[i]->class_id != cc) {
+			if (cc != -1)
+				kc = 0;
+			else
+				cc = lset->examples[i]->class_id;
+		}
+		lset->examples[i]->filter = last_tag;
+	}
+	fprintf(stderr, "Tag: %d -> CC: %d\n", last_tag, cc);
+
+	/* single class */
+	if (kc) {
+		struct classifier *newcls = calloc(1, sizeof(*newcls));
+		newcls->tag = last_tag;
+		newcls->id = cc;
+		newcls->C = 0;
+		return newcls;
+	}
+	return id3_learn(descr, lset, last_tag);
+}
+
+struct classifier *build_discrete_classifier(const struct description *descr,
+		const struct example_set *lset, struct classifier *cls,
+		int index)
+{
+	int i, cc, kc;
+
+	kc = 1;
+	cc = -1;
+	last_tag++;
+	for (i = 0; i < lset->N; i++) {
+		SKIPIF(lset->examples[i]->filter != cls->tag);
+		SKIPIF(lset->examples[i]->attr_ids[cls->id]
+				!= cls->values[index]);
+		if (lset->examples[i]->class_id != cc) {
+			if (cc != -1)
+				kc = 0;
+			else
+				cc = lset->examples[i]->class_id;
+		}
+		lset->examples[i]->filter = last_tag;
+	}
+	fprintf(stderr, "Tag: %d -> CC: %d\n", last_tag, cc);
+
+	/* single class */
+	if (kc) {
+		struct classifier *newcls = calloc(1, sizeof(*newcls));
+		newcls->tag = last_tag;
+		newcls->id = cc;
+		newcls->C = 0;
+		return newcls;
+	}
+	return id3_learn(descr, lset, last_tag);
+}
+
+struct classifier *build_classifier(const struct description *descr,
+		const struct example_set *lset, struct classifier *cls,
+		int index)
+{
+	if (descr->attribs[cls->id]->type == NUMERIC)
+		return build_numeric_classifier(descr, lset, cls, index);
+	return build_discrete_classifier(descr, lset, cls, index);
+}
+
+struct classifier *split_on(const struct description *descr,
+		const struct example_set *lset, int tag, int id)
+{
+	struct classifier *cls;
+	int i;
+
+	cls = calloc(1, sizeof(*cls));
+	cls->tag = tag;
+	cls->id = id;
+	cls->C = descr->attribs[id]->C;
+	INCRIF(descr->attribs[id]->type == NUMERIC, cls->C);
+	cls->values = calloc(cls->C, sizeof(cls->values[0]));
+	cls->cls = calloc(cls->C, sizeof(cls->cls[0]));
+
+	if (descr->attribs[id]->type == NUMERIC) {
+		for (i = 0; i < cls->C - 1; i++)
+			cls->values[i] = descr->attribs[id]->ptr[i];
+		cls->values[i] = 0;
+	} else
+		for (i = 0; i < cls->C; i++)
+			cls->values[i] = i;
+
+	for (i = 0; i < cls->C; i++)
+		cls->cls[i] = build_classifier(descr, lset, cls, i);
+
+	return cls;
 }
 
 void id3_treat_missing(const struct description *descr,
@@ -245,7 +361,7 @@ void id3_build_index(const struct description *descr,
 	int i, j, k, ii, jj;
 
 	for (i = 0; i < descr->M; i++) {
-		SKIPIF(descr->attribs[i]->type != NUMERIC)
+		SKIPIF(descr->attribs[i]->type != NUMERIC);
 		descr->attribs[i]->C = lset->N;
 		descr->attribs[i]->ptr = calloc(lset->N,
 				sizeof(descr->attribs[i]->ptr));
@@ -274,7 +390,8 @@ double split_e(const struct description *descr,
 	int i, cb, ca, aid, N, ccb, cca, K, k;
 	double e;
 
-	cb = ca = 0;
+	cb = 0;
+	ca = 0;
 	N = lset->N;
 	for (i = 0; i < N; i++) {
 		aid = lset->examples[i]->attr_ids[index];
@@ -285,7 +402,8 @@ double split_e(const struct description *descr,
 	K = descr->K;
 	e = 0;
 	for (k = 0; k < K; k++) {
-		ccb = cca = 0;
+		ccb = 0;
+		cca = 0;
 		for (i = 0; i < N; i++) {
 			SKIPIF(lset->examples[i]->class_id != k);
 			aid = lset->examples[i]->attr_ids[index];

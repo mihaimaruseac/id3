@@ -44,11 +44,26 @@ int id3_learn_bootstrap_file(int num_handle, int missing_handle,
  *
  * @param descr The description of the problem.
  * @param lset The learning set.
- * @param num_handle How to handle numeric arguments.
  * @param tag Tag used to filter the learning set.
  */
-static void id3_learn(const struct description *descr,
-		const struct example_set *lset, int num_handle, int tag);
+static struct classifier *id3_learn(const struct description *descr,
+		const struct example_set *lset, int tag);
+
+/**
+ * @brief Builds a classifier obtained after splitting the example set
+ * according to one attribute.
+ *
+ * See the struct classifier documentation. This function is recursive too (it
+ * calls id3_learn and is called from it). Together they build the entire id3
+ * tree.
+ *
+ * @param descr The description of the problem.
+ * @param lset The learning set.
+ * @param tag Tag used to filter the learning set.
+ * @param id Id of attribute being split on
+ */
+struct classifier *split_on(const struct description *descr,
+		const struct example_set *lset, int tag, int id);
 
 /**
  * @brief Fills the missing spots.
@@ -151,6 +166,18 @@ static double test_split_discrete(const struct description *descr,
 static double split_e(const struct description *descr,
 		const struct example_set *lset,
 		int index, int limit);
+
+/**
+ * @brief Discretization of a single attribute.
+ *
+ * @param descr The description of the problem
+ * @param lset The learning set
+ * @param index Index of attribute
+ * @param num_handle How to do the discretization.
+ */
+void id3_attr_discr(const struct description *descr,
+		const struct example_set *lset,
+		int index, int num_handle);
 
 #endif
 

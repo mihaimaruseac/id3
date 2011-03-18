@@ -20,7 +20,7 @@ test_learn: $(TARGET)
 	$(DEBUG) $(TARGET) l tests/1/atribute.txt tests/1/invatare.txt tests/1/dump.txt
 
 doc:
-	doxygen
+	doxygen > /dev/null
 	firefox html/index.html &
 
 tags:

@@ -57,12 +57,16 @@
 /**
  * @brief Macro used to shortcircuit a loop if a condition is true.
  */
-#define SKIPIF(cond) if (cond) continue;
+#define SKIPIF(cond) if (cond) continue
 
 /**
  * @brief Increments a variable if a condition is true.
  */
-#define INCRIF(cond, var) if (cond) var++;
+#define INCRIF(cond, var)\
+	do {\
+		if (cond)\
+			var++;\
+	} while (0)
 
 /**
  * @brief Double division (with conversion).
@@ -162,6 +166,19 @@ struct example_set {
 	struct example **examples;
 	/** Missing columns */
 	int missing[MISS_COUNT];
+};
+
+struct classifier {
+	/** Id of classifier (tag used to generate it) */
+	int tag;
+	/** Id of attribute or class */
+	int id;
+	/** Count of branches or 0 if class */
+	int C;
+	/** Values to the given branch (if numeric, last value is always 0) */
+	int *values;
+	/** Branches (size is given by C) */
+	struct classifier **cls;
 };
 
 /**
