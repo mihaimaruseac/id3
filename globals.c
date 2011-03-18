@@ -371,6 +371,20 @@ void free_example(struct example *ptr)
 	free_and_set_NULL(ptr->attr_ids);
 }
 
+void free_classifier(struct classifier *ptr)
+{
+	int i;
+
+	if (ptr == NULL)
+		return;
+
+	for (i = 0; i < ptr->C; i++)
+		free_classifier(ptr->cls[i]);
+	free_and_set_NULL(ptr->cls);
+	free_and_set_NULL(ptr->values);
+	free_and_set_NULL(ptr);
+}
+
 int set_error(int err)
 {
 	errno = err;

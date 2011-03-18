@@ -375,6 +375,15 @@ static void free_attribute(struct attribute *ptr);
 static void free_example(struct example *ptr);
 
 /**
+ * @brief Frees the id3 tree.
+ *
+ * Must be called with the root of the tree.
+ *
+ * @param ptr Pointer to root.
+ */
+void free_classifier(struct classifier *ptr);
+
+/**
  * @brief Returns an error and sets the errno accordingly.
  *
  * @param err Error code
