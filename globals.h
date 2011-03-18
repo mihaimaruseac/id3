@@ -46,12 +46,28 @@
 #define MISS_ID3 3 /**< @brief use ID3 to detect values for missing values */
 
 #define MISS_COUNT 2 /**< @brief max number of missing columns */
+
 /**
  * @brief Macro used to determine if a bit is set in a flag.
  *
  * It is used to detect which attribute is missing in one example.
  */
 #define MISS_INDEX(flag, index) ((flag) & (1 << (index)))
+
+/**
+ * @brief Macro used to shortcircuit a loop if a condition is true.
+ */
+#define SKIPIF(cond) if (cond) continue;
+
+/**
+ * @brief Increments a variable if a condition is true.
+ */
+#define INCRIF(cond, var) if (cond) var++;
+
+/**
+ * @brief Double division (with conversion).
+ */
+#define DIV(a, b) (((a) + 0.0l) / b)
 
 /**
  * @brief Enumeration of possible types of an attribute.

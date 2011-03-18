@@ -74,6 +74,20 @@ static void id3_build_index(const struct description *descr,
 		const struct example_set *lset);
 
 /**
+ * @brief Starts the discretization process for each numeric attribute.
+ *
+ * It assumes that the indexes are computed and destroys them afterwards,
+ * replacing them with tests for the discrete bins.
+ *
+ * @param descr The description of the problem.
+ * @param lset The learning set
+ * @param num_handle How to handle the numeric arguments: full discretization
+ * or binary discretization.
+ */
+static void id3_discretization(const struct description *descr,
+		const struct example_set *lset, int num_handle);
+
+/**
  * @brief Computes the count of eamples having a specified filter value.
  *
  * @param lset The learning set
@@ -101,14 +115,13 @@ static double id3_I_decision_tree(const struct description *descr,
  * @param descr The description of the problem
  * @param lset The learning set
  * @param index Index of attribute
- * @param num_handle How to handle numeric values
  * @param tag Tag to filter the learning set
  * @param count Count of filtered values
  * @return E_A
  */
 static double test_split_numeric(const struct description *descr,
 		const struct example_set *lset,
-		int index, int num_handle, int tag, int count);
+		int index, int tag, int count);
 
 /**
  * @brief Computes the expected average information obtained by splitting on a
@@ -124,6 +137,20 @@ static double test_split_numeric(const struct description *descr,
 static double test_split_discrete(const struct description *descr,
 		const struct example_set *lset,
 		int index, int tag, int count);
+
+/**
+ * @brief Computes the entropy obtained by splitting a numeric domain in two
+ * at a certain limit according to the description and example provided.
+ *
+ * @param descr The description of the problem
+ * @param lset The learning set
+ * @param index Index of attribute
+ * @param limit The value to split on
+ * @return Then entropy obtained by splitting.
+ */
+static double split_e(const struct description *descr,
+		const struct example_set *lset,
+		int index, int limit);
 
 #endif
 

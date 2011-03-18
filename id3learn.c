@@ -36,6 +36,8 @@ int id3_learn_bootstrap_file(int num_handle, int missing_handle,
 	id3_treat_missing(descr, lset, missing_handle);
 	/* built indexes for numeric arguments */
 	id3_build_index(descr, lset);
+	/* discretization for numeric arguments */
+	id3_discretization(descr, lset, num_handle);
 	/* start the learning process */
 	id3_learn(descr, lset, num_handle, 0);
 
@@ -69,19 +71,14 @@ double id3_I_decision_tree(const struct description *descr,
 		const struct example_set *lset, int tag, int count)
 {
 	int i, n, j;
-	float p, s;
+	float s;
 
-	s = 0;
-	for (i = 0; i < descr->K; i++) {
-		n = 0;
-		for (j = 0; j < lset->N; j++) {
-			if (lset->examples[j]->filter != tag)
-				continue;
-			if (lset->examples[j]->class_id == i)
-				n++;
+	for (i = 0, s = 0; i < descr->K; i++) {
+		for (j = 0, n = 0; j < lset->N; j++) {
+			SKIPIF(lset->examples[j]->filter != tag);
+			INCRIF(lset->examples[j]->class_id == i, n);
 		}
-		p = (n + 0.0l) / count;
-		s += entropy(p);
+		s += entropy(DIV(n, count));
 	}
 
 	return s;
@@ -89,10 +86,59 @@ double id3_I_decision_tree(const struct description *descr,
 
 double test_split_numeric(const struct description *descr,
 		const struct example_set *lset,
-		int index, int num_handle, int tag, int count)
+		int index, int tag, int count)
 {
-	fprintf(stderr, "TODO %d\n", __LINE__);
-	return 0;
+	int i, c, aid, j, k, cc;
+	double id3e, id3i;
+
+	for (i = 0, id3e = 0; i < descr->attribs[index]->C; i++) {
+		for (j = 0, c = 0; j < lset->N; j++) {
+			SKIPIF(lset->examples[j]->filter != tag);
+			aid = lset->examples[j]->attr_ids[index];
+			SKIPIF(aid >= descr->attribs[index]->ptr[i]);
+			SKIPIF(i && aid < descr->attribs[index]->ptr[i-1]);
+			c++;
+		}
+		SKIPIF(c == 0);
+		for (k = 0, id3i = 0; k < descr->K; k++) {
+			for (j = 0, cc = 0; j < lset->N; j++) {
+				SKIPIF(lset->examples[j]->filter != tag);
+				aid = lset->examples[j]->attr_ids[index];
+				SKIPIF(aid >= descr->attribs[index]->ptr[i]);
+				SKIPIF(i &&
+					aid < descr->attribs[index]->ptr[i-1]);
+				INCRIF(lset->examples[j]->class_id == k, cc);
+			}
+			id3i += entropy(DIV(cc, c));
+		}
+		fprintf(stderr, "I(%d_%d) = %6.3lf\n", index, i, id3i);
+		id3e += DIV(c, count) * id3i;
+	}
+
+	for (j = 0, c = 0; j < lset->N; j++) {
+		SKIPIF(lset->examples[j]->filter != tag);
+		aid = lset->examples[j]->attr_ids[index];
+		SKIPIF(aid < descr->attribs[index]->ptr[i-1]);
+		c++;
+	}
+	if (c == 0)
+		goto end;
+	for (k = 0, id3i = 0; k < descr->K; k++) {
+		for (j = 0, cc = 0; j < lset->N; j++) {
+			SKIPIF(lset->examples[j]->filter != tag);
+			aid = lset->examples[j]->attr_ids[index];
+			SKIPIF(aid < descr->attribs[index]->ptr[i-1]);
+			INCRIF(lset->examples[j]->class_id == k, cc);
+		}
+		id3i += entropy(DIV(cc, c));
+	}
+	fprintf(stderr, "I(%d_%d) = %6.3lf\n", index, i, id3i);
+	id3e += DIV(c, count) * id3i;
+
+end:
+	fprintf(stderr, "E(%d) = %6.3lf\n", index, id3e);
+
+	return id3e;
 }
 
 double test_split_discrete(const struct description *descr,
@@ -102,33 +148,23 @@ double test_split_discrete(const struct description *descr,
 	int i, c, j, k, cc;
 	double id3e, id3i;
 
-	id3e = 0;
-	for (i = 0; i < descr->attribs[index]->C; i++) {
-		c = 0;
-		for (j = 0; j < lset->N; j++) {
-			if (lset->examples[j]->filter != tag)
-				continue;
-			if (lset->examples[j]->attr_ids[index] != i)
-				continue;
+	for (i = 0, id3e = 0; i < descr->attribs[index]->C; i++) {
+		for (j = 0, c = 0; j < lset->N; j++) {
+			SKIPIF(lset->examples[j]->filter != tag);
+			SKIPIF(lset->examples[j]->attr_ids[index] != i);
 			c++;
 		}
-		if (c == 0)
-			continue;
-		id3i = 0;
-		for (k = 0; k < descr->K; k++) {
-			cc = 0;
-			for (j = 0; j < lset->N; j++) {
-				if (lset->examples[j]->filter != tag)
-					continue;
-				if (lset->examples[j]->attr_ids[index] != i)
-					continue;
-				if (lset->examples[j]->class_id == k)
-					cc++;
+		SKIPIF(c == 0);
+		for (k = 0, id3i = 0; k < descr->K; k++) {
+			for (j = 0, cc = 0; j < lset->N; j++) {
+				SKIPIF(lset->examples[j]->filter != tag);
+				SKIPIF(lset->examples[j]->attr_ids[index] != i);
+				INCRIF(lset->examples[j]->class_id == k, cc);
 			}
-			id3i += entropy((cc + 0.0l) / c);
+			id3i += entropy(DIV(cc, c));
 		}
 		fprintf(stderr, "I(%d_%d) = %6.3lf\n", index, i, id3i);
-		id3e += ((c + 0.0l) / count) * id3i;
+		id3e += DIV(c, count) * id3i;
 	}
 	fprintf(stderr, "E(%d) = %6.3lf\n", index, id3e);
 
@@ -150,8 +186,7 @@ void id3_learn(const struct description *descr,
 	/* for each attribute */
 	for (i = 0; i < descr->M; i++) {
 		if (descr->attribs[i]->type == NUMERIC)
-			exp = test_split_numeric(descr, lset, i, num_handle,
-					tag, count);
+			exp = test_split_numeric(descr, lset, i, tag, count);
 		else
 			exp = test_split_discrete(descr, lset, i, tag, count);
 		gain = iad - exp;
@@ -162,10 +197,6 @@ void id3_learn(const struct description *descr,
 		}
 	}
 	fprintf(stderr, "Split on %d\n", ibest);
-#if 0
-	write_description(descr, stdout);
-	write_set(lset, descr, stdout);
-#endif
 }
 
 void id3_treat_missing(const struct description *descr,
@@ -214,8 +245,7 @@ void id3_build_index(const struct description *descr,
 	int i, j, k, ii, jj;
 
 	for (i = 0; i < descr->M; i++) {
-		if (descr->attribs[i]->type != NUMERIC)
-			continue;
+		SKIPIF(descr->attribs[i]->type != NUMERIC)
 		descr->attribs[i]->C = lset->N;
 		descr->attribs[i]->ptr = calloc(lset->N,
 				sizeof(descr->attribs[i]->ptr));
@@ -234,6 +264,100 @@ void id3_build_index(const struct description *descr,
 					descr->attribs[i]->ptr[j] = jj;
 				}
 			}
+	}
+}
+
+double split_e(const struct description *descr,
+		const struct example_set *lset,
+		int index, int limit)
+{
+	int i, cb, ca, aid, N, ccb, cca, K, k;
+	double e;
+
+	cb = ca = 0;
+	N = lset->N;
+	for (i = 0; i < N; i++) {
+		aid = lset->examples[i]->attr_ids[index];
+		INCRIF(aid < limit, cb);
+		INCRIF(aid >= limit, ca);
+	}
+
+	K = descr->K;
+	e = 0;
+	for (k = 0; k < K; k++) {
+		ccb = cca = 0;
+		for (i = 0; i < N; i++) {
+			SKIPIF(lset->examples[i]->class_id != k);
+			aid = lset->examples[i]->attr_ids[index];
+			INCRIF(aid < limit, ccb);
+			INCRIF(aid >= limit, cca);
+		}
+		e += entropy(DIV(cca, ca)) * DIV(ca, N);
+		e += entropy(DIV(ccb, cb)) * DIV(cb, N);
+	}
+
+	return e;
+}
+
+void id3_attr_discr(const struct description *descr,
+		const struct example_set *lset,
+		int index, int num_handle)
+{
+	int cclass, ccount, *candidates, i, C, cid, ix, aid, imin;
+	double *entropies, min;
+
+	candidates = calloc(lset->N, sizeof(candidates[0]));
+	C = descr->attribs[index]->C;
+	cclass = lset->examples[descr->attribs[index]->ptr[0]]->class_id;
+	ccount = 0;
+	for (i = 0; i < C; i++) {
+		ix = descr->attribs[index]->ptr[i];
+		cid = lset->examples[ix]->class_id;
+		aid = lset->examples[ix]->attr_ids[index];
+		SKIPIF(ccount && aid == candidates[ccount - 1]);
+		if (cid != cclass) {
+			cclass = cid;
+			candidates[ccount++] = aid;
+		}
+	}
+
+	entropies = calloc(ccount, sizeof(entropies[0]));
+	for (i = 0; i < ccount; i++)
+		entropies[i] = split_e(descr, lset, index, candidates[i]);
+
+	imin = 0;
+	min = entropies[imin];
+	for (i = 1; i < ccount; i++)
+		if (min > entropies[i]) {
+			min = entropies[i];
+			imin = i;
+		}
+
+	if (num_handle == NUM_DIV) {
+		descr->attribs[index]->ptr[0] = candidates[imin];
+		descr->attribs[index]->C = 1;
+		goto end;
+	}
+
+	fprintf(stderr, "TODO %d\n", __LINE__);
+
+	for (i = 0; i < ccount; i++)
+		fprintf(stderr, "%d(%5.3lf) ", candidates[i], entropies[i]);
+	fprintf(stderr, "\n");
+
+end:
+	free(candidates);
+	free(entropies);
+}
+
+void id3_discretization(const struct description *descr,
+		const struct example_set *lset, int num_handle)
+{
+	int i;
+
+	for (i = 0; i < descr->M; i++) {
+		SKIPIF(descr->attribs[i]->type != NUMERIC);
+		id3_attr_discr(descr, lset, i, num_handle);
 	}
 }
 

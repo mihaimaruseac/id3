@@ -38,6 +38,6 @@ double entropy(double p)
 		return 0;
 	if (p > 1)
 		return 0;
-	return - p * log2(p);
+	return -p * log2(p);
 }
 
