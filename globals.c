@@ -228,8 +228,26 @@ fail:
 	return free_and_set_NULL(tmp);
 }
 
-struct classifier *read_classifier()
+struct classifier *read_classifier(FILE *file)
 {
+	struct classifier *cls, *tmp;
+	int i;
+
+	cls = calloc(1, sizeof(*cls));
+	CHECK(fscanf(file, "%d%d%d", &cls->tag, &cls->id, &cls->C) == 3, fail);
+	cls->values = calloc(cls->C, sizeof(cls->values[0]));
+	cls->cls = calloc(cls->C, sizeof(cls->cls[0]));
+	for (i = 0; i < cls->C; i++)
+		CHECK(fscanf(file, "%d", &cls->values[i]) == 1, fail);
+	for (i = 0; i < cls->C; i++) {
+		tmp = read_classifier(file);
+		CHECK(tmp != NULL, fail);
+		cls->cls[i] = tmp;
+	}
+	return cls;
+fail:
+	free_classifier(cls);
+	return NULL;
 }
 
 void write_attribute(const struct attribute *attr, FILE *file)

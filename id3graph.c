@@ -20,7 +20,21 @@
 
 int id3_output_graph(FILE *id3, FILE *out, int graph_mode)
 {
-	fprintf(stderr, "TODO %s %d\n", __FILE__, __LINE__);
+	struct description *descr;
+	struct classifier *cls;
+
+	descr = read_description_file(id3);
+	cls = read_classifier(id3);
+	CHECK(cls != NULL, fail);
+
+	free_description(descr);
+	free_and_set_NULL(descr);
+	free_classifier(cls);
 	return 0;
+fail:
+	free_description(descr);
+	free_and_set_NULL(descr);
+	free_classifier(cls);
+	return set_error(EINVAL);
 }
 

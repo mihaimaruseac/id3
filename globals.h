@@ -262,6 +262,13 @@ static struct example *read_example(FILE *file, int learning,
 		struct example_set *set);
 
 /**
+ * @brief Reads the classifier stored in a file.
+ *
+ * @return the classifier.
+ */
+struct classifier *read_classifier(FILE *file);
+
+/**
  * @brief Writes the description to a file.
  *
  * File can be standard output or anything else.
