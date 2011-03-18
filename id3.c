@@ -184,7 +184,7 @@ static void graphing_instance(int argc, char **argv)
 	FILE *id3, *out;
 	int i, graph_mode, status;
 
-	if (argc < 3 || argc > 4)
+	if (argc < 3 || argc > 5)
 		usage();
 
 	id3_file = NULL;
@@ -193,7 +193,8 @@ static void graphing_instance(int argc, char **argv)
 
 	for (i = 2; i < argc; i++)
 		if (argv[i][0] == '-') /* option or stdout */
-			if (strncmp(argv[i], "-", 1) == 0 && out_file == NULL)
+			if (strncmp(argv[i], "-", strlen(argv[i])) == 0 &&
+					out_file == NULL)
 				if (id3_file != NULL)
 					out_file = strdup(argv[i]);
 				else
@@ -220,7 +221,7 @@ static void graphing_instance(int argc, char **argv)
 
 	id3 = fopen(id3_file, "r");
 	if (id3 == NULL) {
-		perror("Cannot open learn file");
+		perror("Cannot open classifier file");
 		goto fail;
 	}
 	free(id3_file);
@@ -252,10 +253,76 @@ fail:
 	usage();
 }
 
+/**
+ * @brief Parses the cmd line for the case when we wish to represent an id3
+ * tree corresponding to a classifier.
+ */
 static void classifying_instance(int argc, char **argv)
 {
-	fprintf(stderr, "TODO %s %d\n", __FILE__, __LINE__);
-	exit(EXIT_SUCCESS);
+	char *id3_file, *test_file, *out_file;
+	FILE *id3, *out, *test;
+	int i, status;
+
+	if (argc < 4 || argc > 5)
+		usage();
+
+	id3_file = NULL;
+	test_file = NULL;
+	out_file = NULL;
+
+	for (i = 2; i < argc; i++)
+		if (id3_file == NULL)
+			id3_file = strdup(argv[i]);
+		else if (test_file == NULL)
+			test_file = strdup(argv[i]);
+		else if (out_file == NULL)
+			out_file = strdup(argv[i]);
+		else
+			goto fail;
+
+	id3 = fopen(id3_file, "r");
+	if (id3 == NULL) {
+		perror("Cannot open classifier file");
+		goto fail;
+	}
+	free(id3_file);
+
+	test = fopen(test_file, "r");
+	if (test == NULL) {
+		perror("Cannot open test file");
+		fclose(id3);
+		goto fail;
+	}
+	free(test_file);
+
+	if (out_file == NULL || strncmp(out_file, "-", 1) == 0)
+		out = stdout;
+	else {
+		out = fopen(out_file, "w");
+		if (out == NULL) {
+			perror("Cannot open output file");
+			fclose(test);
+			fclose(id3);
+			goto fail;
+		}
+	}
+
+	status = id3_test(id3, test, out);
+	if (status)
+		perror("Error while testing");
+
+	fclose(id3);
+	fclose(test);
+	if (out_file && strncmp(out_file, "-", 1) != 0)
+		fclose(out);
+	free(out_file);
+
+	exit(status);
+fail:
+	free_and_set_NULL(out_file);
+	free_and_set_NULL(test_file);
+	free_and_set_NULL(id3_file);
+	usage();
 }
 
 int main(int argc, char **argv)
