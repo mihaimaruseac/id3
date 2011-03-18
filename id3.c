@@ -23,6 +23,7 @@
 
 #include "globals.h"
 #include "id3learn.h"
+#include "id3graph.h"
 
 /**
  * @brief Macro used to set a default value to a flag argument if it is still
@@ -177,7 +178,7 @@ static void graphing_instance(int argc, char **argv)
 {
 	char *id3_file, *out_file;
 	FILE *id3, *out;
-	int i, graph_mode;
+	int i, graph_mode, status;
 
 	if (argc < 3 || argc > 4)
 		usage();
@@ -213,10 +214,34 @@ static void graphing_instance(int argc, char **argv)
 	CHECK(id3_file != NULL, fail);
 	SET_DEFAULT(graph_mode, TREE_ASCII);
 
-	fprintf(stderr, "TODO %s %d\n", __FILE__, __LINE__);
-	free_and_set_NULL(out_file);
-	free_and_set_NULL(id3_file);
-	exit(EXIT_SUCCESS);
+	id3 = fopen(id3_file, "r");
+	if (id3 == NULL) {
+		perror("Cannot open learn file");
+		goto fail;
+	}
+	free(id3_file);
+
+	if (out_file == NULL || strncmp(out_file, "-", 1) == 0)
+		out = stdout;
+	else {
+		out = fopen(out_file, "w");
+		if (out == NULL) {
+			perror("Cannot open output file");
+			fclose(id3);
+			goto fail;
+		}
+	}
+
+	status = id3_output_graph(id3, out, graph_mode);
+	if (status)
+		perror("Error while outputing graph");
+
+	fclose(id3);
+	if (out_file && strncmp(out_file, "-", 1) != 0)
+		fclose(out);
+	free(out_file);
+
+	exit(status);
 fail:
 	free_and_set_NULL(out_file);
 	free_and_set_NULL(id3_file);

@@ -3,7 +3,7 @@
 TARGET = ./id3
 CFLAGS = -Wall -Wextra -g -O0 -Wno-unused
 LDFLAGS = -lm
-OBJS = id3.o globals.o id3learn.o id3missing.o id3math.o
+OBJS = id3.o globals.o id3learn.o id3missing.o id3math.o id3graph.o
 DEBUG = valgrind --leak-check=full --show-reachable=yes
 
 all: $(TARGET)
