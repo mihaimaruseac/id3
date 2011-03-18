@@ -174,6 +174,10 @@ fail:
 	usage();
 }
 
+/**
+ * @brief Parses the cmd line for the case when we wish to represent an id3
+ * tree corresponding to a classifier.
+ */
 static void graphing_instance(int argc, char **argv)
 {
 	char *id3_file, *out_file;
