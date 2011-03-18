@@ -22,6 +22,9 @@ test_learn: $(TARGET)
 test_graph: $(TARGET)
 	$(DEBUG) $(TARGET) g tests/1/dump.txt
 
+test_classify: $(TARGET)
+	$(DEBUG) $(TARGET) c
+
 doc:
 	doxygen > /dev/null
 	firefox html/index.html &
