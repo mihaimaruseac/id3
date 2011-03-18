@@ -297,6 +297,30 @@ static void write_example(const struct example *ex,
 		FILE *file);
 
 /**
+ * @brief Writes a classifier to a file.
+ *
+ * @param cls The classifier
+ * @param file File to write to.
+ */
+void write_classifier(const struct classifier *cls, FILE *file);
+
+/**
+ * @brief Writes the id3 intermediate representation to a file.
+ *
+ * The intermediate representation consists of the classifier and the
+ * description. This file will also contain a copy of the description because
+ * it is needed when building the tree or classifying other instances at a
+ * later time.
+ *
+ * @param descr Description of the problem
+ * @param cls The classifier
+ * @param file File to write to.
+ */
+void write_id3_temp_file(const struct description *descr,
+		const struct classifier *cls,
+		FILE *file);
+
+/**
  * @brief Tests if an example contains a missing value on the current
  * position.
  *

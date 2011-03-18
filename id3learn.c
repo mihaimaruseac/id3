@@ -47,6 +47,8 @@ int id3_learn_bootstrap_file(int num_handle, int missing_handle,
 	id3_discretization(descr, lset, num_handle);
 	/* start the learning process */
 	cls = id3_learn(descr, lset, 0);
+	/* write results */
+	write_id3_temp_file(descr, cls, id3_file);
 
 	free_classifier(cls);
 	free_description(descr);

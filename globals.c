@@ -299,6 +299,30 @@ void write_example(const struct example *ex,
 	fprintf(file, "%s\n", descr->classes[ex->class_id]);
 }
 
+void write_classifier(const struct classifier *cls, FILE *file)
+{
+	int i;
+
+	if (cls == NULL)
+		return;
+
+	fprintf(file, "%d %d %d", cls->tag, cls->id, cls->C);
+	for (i = 0; i < cls->C; i++)
+		fprintf(file, " %d", cls->values[i]);
+	fprintf(file, "\n");
+
+	for (i = 0; i < cls->C; i++)
+		write_classifier(cls->cls[i], file);
+}
+
+void write_id3_temp_file(const struct description *descr,
+		const struct classifier *cls,
+		FILE *file)
+{
+	write_description(descr, file);
+	write_classifier(cls, file);
+}
+
 void clear_filter_info(struct example_set *lset)
 {
 	int i;
