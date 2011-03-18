@@ -228,6 +228,10 @@ fail:
 	return free_and_set_NULL(tmp);
 }
 
+struct classifier *read_classifier()
+{
+}
+
 void write_attribute(const struct attribute *attr, FILE *file)
 {
 	int i;

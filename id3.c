@@ -25,6 +25,28 @@
 #include "id3learn.h"
 
 /**
+ * @brief Macro used to set a default value to a flag argument if it is still
+ * UNKNOWN_VALUE.
+ *
+ * @param flag Flag to test and set
+ * @param val Default value to use
+ */
+#define SET_DEFAULT(flag, val)\
+	do {\
+		if (flag == UNKNOWN_VALUE)\
+			flag = val;\
+	} while (0)
+
+/**
+ * @brief Macro used to test if a specified command line flag defines a value
+ * or is eroneous.
+ *
+ * @return 1 if flag is ok, 0 otherwise
+ */
+#define SETS(var, val)\
+	(strncmp(argv[i], val, strlen(val)) == 0 && var == UNKNOWN_VALUE)
+
+/**
  * @brief Prints the usage information.
  */
 static void usage()
@@ -50,8 +72,10 @@ static void usage()
 			"\t\tFILES = ID3FILE [OUTFILE(output)]\n"
 			"\t\t\tOUTFILE can be - (or missing) for stdout\n"
 			"\t\tOPTIONS:\n"
-			"\t\t\t-gtree - display tree-like (default)\n"
+			"\t\t\t-gascii - display in ASCII art (default)\n"
 			"\t\t\t-gdot - display using Dot\n"
+			"\t\t\t-gscheme - display Scheme-like (Lisp-like)\n"
+			"\t\t\t-gifthen - display using if (...) blocks\n"
 			"\n"
 			"\tClassification options and arguments:\n"
 			"\t\tFILES = ATTRFILE TESTFILE [OUTFILE(output)]\n"
@@ -81,20 +105,15 @@ static void learning_instance(int argc, char **argv)
 
 	for (i = 2; i < argc; i++)
 		if (argv[i][0] == '-')/* option */
-			if (strncmp(argv[i], "-ndiv", 5) == 0 && num_handle ==
-					UNKNOWN_VALUE)
+			if (SETS(num_handle, "-ndiv"))
 				num_handle = NUM_DIV;
-			else if (strncmp(argv[i], "-nfull", 6) == 0 &&
-					num_handle == UNKNOWN_VALUE)
+			else if (SETS(num_handle, "-nfull"))
 				num_handle = NUM_FULL;
-			else if (strncmp(argv[i], "-mmaj", 5) == 0 &&
-					missing_handle == UNKNOWN_VALUE)
+			else if (SETS(missing_handle, "-mmaj"))
 				missing_handle = MISS_MAJ;
-			else if (strncmp(argv[i], "-mprb", 5) == 0 &&
-					missing_handle == UNKNOWN_VALUE)
+			else if (SETS(missing_handle, "-mprb"))
 				missing_handle = MISS_PRB;
-			else if (strncmp(argv[i], "-mid3", 5) == 0 &&
-					missing_handle == UNKNOWN_VALUE)
+			else if (SETS(missing_handle, "-mid3"))
 				missing_handle = MISS_ID3;
 			else
 				goto fail;
@@ -110,10 +129,8 @@ static void learning_instance(int argc, char **argv)
 	CHECK(id3_file != NULL, fail);
 	CHECK(learn_file != NULL, fail);
 
-	if (num_handle == UNKNOWN_VALUE)
-		num_handle = NUM_DIV;
-	if (missing_handle == UNKNOWN_VALUE)
-		missing_handle = MISS_MAJ;
+	SET_DEFAULT(num_handle, NUM_DIV);
+	SET_DEFAULT(missing_handle, MISS_MAJ);
 
 	attr = fopen(attr_file, "r");
 	if (attr == NULL) {
@@ -158,11 +175,57 @@ fail:
 
 static void graphing_instance(int argc, char **argv)
 {
+	char *id3_file, *out_file;
+	FILE *id3, *out;
+	int i, graph_mode;
+
+	if (argc < 3 || argc > 4)
+		usage();
+
+	id3_file = NULL;
+	out_file = NULL;
+	graph_mode = UNKNOWN_VALUE;
+
+	for (i = 2; i < argc; i++)
+		if (argv[i][0] == '-') /* option or stdout */
+			if (strncmp(argv[i], "-", 1) == 0 && out_file == NULL)
+				if (id3_file != NULL)
+					out_file = strdup(argv[i]);
+				else
+					goto fail;
+			else if (SETS(graph_mode, "-gascii"))
+				graph_mode = TREE_ASCII;
+			else if (SETS(graph_mode, "-gdot"))
+				graph_mode = TREE_DOT;
+			else if (SETS(graph_mode, "-gscheme"))
+				graph_mode = TREE_SCHEME;
+			else if (SETS(graph_mode, "-gifthen"))
+				graph_mode = TREE_IFTHEN;
+			else
+				goto fail;
+		else if (id3_file == NULL)
+			id3_file = strdup(argv[i]);
+		else if (out_file == NULL)
+			out_file = strdup(argv[i]);
+		else
+			goto fail;
+
+	CHECK(id3_file != NULL, fail);
+	SET_DEFAULT(graph_mode, TREE_ASCII);
+
+	fprintf(stderr, "TODO %s %d\n", __FILE__, __LINE__);
+	free_and_set_NULL(out_file);
+	free_and_set_NULL(id3_file);
 	exit(EXIT_SUCCESS);
+fail:
+	free_and_set_NULL(out_file);
+	free_and_set_NULL(id3_file);
+	usage();
 }
 
 static void classifying_instance(int argc, char **argv)
 {
+	fprintf(stderr, "TODO %s %d\n", __FILE__, __LINE__);
 	exit(EXIT_SUCCESS);
 }
 
