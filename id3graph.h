@@ -84,5 +84,71 @@ static void graph_scheme(const struct description *descr,
 static void graph_ifthen(const struct description *descr,
 		const struct classifier *cls, FILE* out);
 
+/**
+ * @brief Tries to print the class from a classifier when using Scheme-like
+ * output.
+ *
+ * If the class can't be printed (more tests are needed), this function will
+ * call the corresponding function to get the next level of the id3 tree. From
+ * there, it will be called again.
+ *
+ * @param descr The description to use
+ * @param cls The classifier
+ * @param out Where to output
+ * @param level Level of indentation
+ */
+static void g_sch_print(const struct description *descr,
+		const struct classifier *cls, FILE *out, int level);
+
+/**
+ * @brief Prints the tests associated with a numeric test.
+ *
+ * It uses the (cond ..) Scheme/Lisp function call.
+ *
+ * @param descr The description to use
+ * @param cls The classifier
+ * @param out Where to output
+ * @param level Level of indentation
+ */
+static void g_sch_num_branches(const struct description *descr,
+		const struct classifier *cls, FILE *out, int level);
+
+/**
+ * @brief Prints the tests associated with a discrete test.
+ *
+ * It uses the (cond ..) Scheme/Lisp function call.
+ *
+ * @param descr The description to use
+ * @param cls The classifier
+ * @param out Where to output
+ * @param level Level of indentation
+ */
+static void g_sch_dsc_branches(const struct description *descr,
+		const struct classifier *cls, FILE *out, int level);
+
+/**
+ * @brief Starts the cond branches list.
+ *
+ * @param descr The description to use
+ * @param cls The classifier
+ * @param out Where to output
+ * @param level Level of indentation
+ */
+static void g_sch_cond(const struct description *descr,
+		const struct classifier *cls, FILE *out, int level);
+
+/**
+ * @brief Starts a new (cond ...) construct.
+ *
+ * After a few calls, the classes will be printed.
+ *
+ * @param descr The description to use
+ * @param cls The classifier
+ * @param out Where to output
+ * @param level Level of indentation
+ */
+static void g_sch_if(const struct description *descr,
+		const struct classifier *cls, FILE *out, int level);
+
 #endif
 

@@ -100,10 +100,79 @@ void graph_dot(const struct description *descr,
 	fprintf(stderr, "TODO output dot %s %d\n", __FILE__, __LINE__);
 }
 
+void g_sch_print(const struct description *descr,
+		const struct classifier *cls, FILE *out, int level)
+{
+	if (cls->C == 0)
+		fprintf(out, "'%s", descr->classes[cls->id]);
+	else {
+		fprintf(out, "\n");
+		g_sch_if(descr, cls, out, level + 2);
+		fprintf(out, "%*c", TABS * (1 + level), ' ');
+	}
+}
+
+void g_sch_num_branches(const struct description *descr,
+		const struct classifier *cls, FILE *out, int level)
+{
+	int i, aid;
+	char *name;
+	int val;
+
+	aid = cls->id;
+	name = descr->attribs[aid]->name;
+	i = cls->C - 2;
+	val = cls->values[i];
+	fprintf(out, "%*c((>= %s %d) ", TABS * level, ' ', name, val);
+	g_sch_print(descr, cls->cls[i], out, level);
+	fprintf(out, ")\n");
+	for (; i >= 0; i--) {
+		val = cls->values[i];
+		fprintf(out, "%*c((< %s %d) ", TABS * level, ' ', name, val);
+		g_sch_print(descr, cls->cls[i], out, level);
+		fprintf(out, ")\n");
+	}
+}
+
+void g_sch_dsc_branches(const struct description *descr,
+		const struct classifier *cls, FILE *out, int level)
+{
+	int i, aid;
+	char *val;
+
+	aid = cls->id;
+	for (i = 0; i < cls->C; i++) {
+		val = (char *)descr->attribs[aid]->ptr[cls->values[i]];
+		fprintf(out, "%*c((eqv? %s '%s) ", TABS * level, ' ',
+				descr->attribs[aid]->name, val);
+		g_sch_print(descr, cls->cls[i], out, level);
+		fprintf(out, ")\n");
+	}
+}
+
+void g_sch_cond(const struct description *descr,
+		const struct classifier *cls, FILE *out, int level)
+{
+	fprintf(out, "%*c(\n", TABS * level, ' ');
+	if (descr->attribs[cls->id]->type == NUMERIC)
+		g_sch_num_branches(descr, cls, out, level + 1);
+	else
+		g_sch_dsc_branches(descr, cls, out, level + 1);
+	fprintf(out, "%*c)\n", TABS * level, ' ');
+}
+
+void g_sch_if(const struct description *descr,
+		const struct classifier *cls, FILE *out, int level)
+{
+	fprintf(out, "%*c(cond\n", TABS * level, level ? ' ' : 0);
+	g_sch_cond(descr, cls, out, level + 1);
+	fprintf(out, "%*c)\n", TABS * level, level ? ' ' : 0);
+}
+
 void graph_scheme(const struct description *descr,
 		const struct classifier *cls, FILE* out)
 {
-	fprintf(stderr, "TODO output scheme %s %d\n", __FILE__, __LINE__);
+	g_sch_if(descr, cls, out, 0);
 }
 
 void graph_ifthen(const struct description *descr,
