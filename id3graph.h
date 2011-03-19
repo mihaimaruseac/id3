@@ -150,5 +150,16 @@ static void g_sch_cond(const struct description *descr,
 static void g_sch_if(const struct description *descr,
 		const struct classifier *cls, FILE *out, int level);
 
+/**
+ * @brief Prints the content of the dot file.
+ *
+ * @param descr The description to use
+ * @param cls The classifier
+ * @param out Where to output
+ * @param level Level of indentation
+ */
+static int dot_output(const struct description *descr,
+		const struct classifier *cls, FILE *out, int level);
+
 #endif
 

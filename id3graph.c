@@ -110,30 +110,27 @@ int dot_output(const struct description *descr,
 	type = descr->attribs[cls->id]->type;
 	fprintf(out, "%s%d [label=%s][shape=box];\n", name, level, name);
 	l = level++;
-	for (i = 0; i < cls->C; i++){
+	for (i = 0; i < cls->C; i++) {
 		ll = level;
 		level = dot_output(descr, cls->cls[i], out, level);
 		if (cls->cls[i]->C == 0)
 			dname = descr->classes[cls->cls[i]->id];
 		else
 			dname = descr->attribs[cls->cls[i]->id]->name;
-		if (type == NUMERIC) {
+		if (type == NUMERIC)
 			if (i < cls->C - 1)
 				fprintf(out, "%s%d -- %s%d [label=\"<%d\"]"
-						"[fontsize=10];\n",
-						name, l, dname, ll,
-						cls->values[i]);
+					"[fontsize=10];\n", name, l, dname,
+					ll, cls->values[i]);
 			else
 				fprintf(out, "%s%d -- %s%d[label=\">=%d\"]"
-						"[fontsize=10];\n",
-						name, l, dname, ll,
-						cls->values[i - 1]);
-		} else {
+					"[fontsize=10];\n", name, l, dname,
+					ll, cls->values[i - 1]);
+		else {
 			aname = (char *)
 				descr->attribs[cls->id]->ptr[cls->values[i]];
 			fprintf(out, "%s%d -- %s%d[label=\"%s\"]"
-					"[fontsize=10];\n",
-					name, l, dname, ll, aname);
+				"[fontsize=10];\n", name, l, dname, ll, aname);
 		}
 	}
 	return level;

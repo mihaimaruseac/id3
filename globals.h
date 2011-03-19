@@ -104,12 +104,12 @@ enum attr_type {
 struct attribute {
 	/** Name of the attribute */
 	char *name;
-	/** Type of attribute */
-	enum attr_type type;
 	/** Type-dependent pointer (see description) */
 	int *ptr;
 	/** Length of vector pointed to by ptr */
 	int C;
+	/** @param type Type of attribute */
+	enum attr_type type;
 };
 
 /**
