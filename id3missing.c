@@ -19,16 +19,15 @@
 #include "id3missing.h"
 
 void numeric_maj_fill_missing(const struct description *descr,
-		struct example_set *lset, const int attr_index,
-		const int miss_index)
+		struct example_set *lset, int attr_index,
+		int miss_index)
 {
 	int sum, count, i;
 
 	count = 0;
 	sum = 0;
 	for (i = 0; i < lset->N; i++) {
-		if (MISS_INDEX(lset->examples[i]->miss, miss_index))
-			continue;
+		SKIPIF(MISS_INDEX(lset->examples[i]->miss, miss_index));
 		sum += lset->examples[i]->attr_ids[attr_index];
 		count += 1;
 	}
@@ -42,8 +41,8 @@ void numeric_maj_fill_missing(const struct description *descr,
 }
 
 void numeric_prb_fill_missing(const struct description *descr,
-		struct example_set *lset, const int attr_index,
-		const int miss_index)
+		struct example_set *lset, int attr_index,
+		int miss_index)
 {
 	int K, i, j, max, imax, c, **counts, C, *vals, ind, v;
 
@@ -56,8 +55,7 @@ void numeric_prb_fill_missing(const struct description *descr,
 
 	C = 0;
 	for (i = 0; i < lset->N; i++) {
-		if (MISS_INDEX(lset->examples[i]->miss, miss_index))
-			continue;
+		SKIPIF(MISS_INDEX(lset->examples[i]->miss, miss_index));
 		c = lset->examples[i]->class_id;
 		v = lset->examples[i]->attr_ids[attr_index];
 		for (ind = 0; ind < C; ind++)
@@ -65,8 +63,7 @@ void numeric_prb_fill_missing(const struct description *descr,
 				counts[c][ind]++;
 				break;
 			}
-		if (ind < C)
-			continue;
+		SKIPIF(ind < C);
 		counts[c][C]++;
 		vals[C++] = v;
 	}
@@ -91,24 +88,16 @@ void numeric_prb_fill_missing(const struct description *descr,
 	free(vals);
 }
 
-void numeric_id3_fill_missing(const struct description *descr,
-		struct example_set *lset, const int attr_index,
-		const int miss_index)
-{
-	fprintf(stderr, "TODO id3 %s %d\n", __FILE__, __LINE__);
-}
-
 void discrete_maj_fill_missing(const struct description *descr,
-		struct example_set *lset, const int attr_index,
-		const int miss_index)
+		struct example_set *lset, int attr_index,
+		int miss_index)
 {
 	int *counts, i, max, imax, C;
 
 	C = descr->attribs[attr_index]->C;
 	counts = calloc(C, sizeof(counts[0]));
 	for (i = 0; i < lset->N; i++) {
-		if (MISS_INDEX(lset->examples[i]->miss, miss_index))
-			continue;
+		SKIPIF(MISS_INDEX(lset->examples[i]->miss, miss_index));
 		counts[lset->examples[i]->attr_ids[attr_index]]++;
 	}
 
@@ -130,8 +119,8 @@ void discrete_maj_fill_missing(const struct description *descr,
 }
 
 void discrete_prb_fill_missing(const struct description *descr,
-		struct example_set *lset, const int attr_index,
-		const int miss_index)
+		struct example_set *lset, int attr_index,
+		int miss_index)
 {
 	int K, C, i, **counts, c, j, max, imax;
 
@@ -142,8 +131,7 @@ void discrete_prb_fill_missing(const struct description *descr,
 		counts[i] = calloc(C, sizeof(counts[i][0]));
 
 	for (i = 0; i < lset->N; i++) {
-		if (MISS_INDEX(lset->examples[i]->miss, miss_index))
-			continue;
+		SKIPIF(MISS_INDEX(lset->examples[i]->miss, miss_index));
 		c = lset->examples[i]->class_id;
 		counts[c][lset->examples[i]->attr_ids[attr_index]]++;
 	}
@@ -165,12 +153,5 @@ void discrete_prb_fill_missing(const struct description *descr,
 	for (i = 0; i < K; i++)
 		free(counts[i]);
 	free(counts);
-}
-
-void discrete_id3_fill_missing(const struct description *descr,
-		struct example_set *lset, const int attr_index,
-		const int miss_index)
-{
-	fprintf(stderr, "TODO id3 %s %d\n", __FILE__, __LINE__);
 }
 

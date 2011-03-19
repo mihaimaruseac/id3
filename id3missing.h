@@ -28,8 +28,8 @@
  * @param miss_index Index in missing structure.
  */
 void numeric_maj_fill_missing(const struct description *descr,
-		struct example_set *lset, const int attr_index,
-		const int miss_index);
+		struct example_set *lset, int attr_index,
+		int miss_index);
 
 /**
  * @brief Treats missing numeric attributes by using probability theory.
@@ -43,23 +43,8 @@ void numeric_maj_fill_missing(const struct description *descr,
  * @param miss_index Index in missing structure.
  */
 void numeric_prb_fill_missing(const struct description *descr,
-		struct example_set *lset, const int attr_index,
-		const int miss_index);
-
-/**
- * @brief Treats missing numeric attributes by using ID3 to classify.
- *
- * Spawns a new process, after writing this description to files in a new
- * format!
- *
- * @param descr The description (used when writing the informations)
- * @param lset The learning set
- * @param attr_index Index of attribute with missing values
- * @param miss_index Index in missing structure.
- */
-void numeric_id3_fill_missing(const struct description *descr,
-		struct example_set *lset, const int attr_index,
-		const int miss_index);
+		struct example_set *lset, int attr_index,
+		int miss_index);
 
 /**
  * @brief Treats missing discrete attributes by filling with the average of the
@@ -71,8 +56,8 @@ void numeric_id3_fill_missing(const struct description *descr,
  * @param miss_index Index in missing structure.
  */
 void discrete_maj_fill_missing(const struct description *descr,
-		struct example_set *lset, const int attr_index,
-		const int miss_index);
+		struct example_set *lset, int attr_index,
+		int miss_index);
 
 /**
  * @brief Treats missing discrete attributes by using probability theory.
@@ -86,23 +71,8 @@ void discrete_maj_fill_missing(const struct description *descr,
  * @param miss_index Index in missing structure.
  */
 void discrete_prb_fill_missing(const struct description *descr,
-		struct example_set *lset, const int attr_index,
-		const int miss_index);
-
-/**
- * @brief Treats missing discrete attributes by using ID3 to classify.
- *
- * Spawns a new process, after writing this description to files in a new
- * format!
- *
- * @param descr The description (used when writing the informations)
- * @param lset The learning set
- * @param attr_index Index of attribute with missing values
- * @param miss_index Index in missing structure.
- */
-void discrete_id3_fill_missing(const struct description *descr,
-		struct example_set *lset, const int attr_index,
-		const int miss_index);
+		struct example_set *lset, int attr_index,
+		int miss_index);
 
 #endif
 

@@ -43,7 +43,6 @@
 
 #define MISS_MAJ 1 /**< @brief replace missing attributes with the majority */
 #define MISS_PRB 2 /**< @brief use probabilities to guess the missing values */
-#define MISS_ID3 3 /**< @brief use ID3 to detect values for missing values */
 
 #define TREE_ASCII 1 /**< @brief output ID3 tree in ASCII */
 #define TREE_DOT 2 /**< @brief output ID3 tree using Dot */

@@ -335,10 +335,6 @@ void id3_treat_missing(const struct description *descr,
 				numeric_prb_fill_missing(descr, lset,
 						index, i);
 				break;
-			case MISS_ID3:
-				numeric_id3_fill_missing(descr, lset,
-						index, i);
-				break;
 			}
 		else
 			switch (missing_handle) {
@@ -348,10 +344,6 @@ void id3_treat_missing(const struct description *descr,
 				break;
 			case MISS_PRB:
 				discrete_prb_fill_missing(descr, lset,
-						index, i);
-				break;
-			case MISS_ID3:
-				discrete_id3_fill_missing(descr, lset,
 						index, i);
 				break;
 			}

@@ -68,7 +68,6 @@ static void usage()
 			"\t\t\tHandling missing attributes (one of):\n"
 			"\t\t\t\t-mmaj - replace with most frequent (default)\n"
 			"\t\t\t\t-mprb - use probability theory\n"
-			"\t\t\t\t-mid3 - use ID3\n"
 			"\n"
 			"\tGraph output options and arguments:\n"
 			"\t\tFILES = ID3FILE [OUTFILE(output)]\n"
@@ -114,8 +113,6 @@ static void learning_instance(int argc, char **argv)
 				missing_handle = MISS_MAJ;
 			else if (SETS(missing_handle, "-mprb"))
 				missing_handle = MISS_PRB;
-			else if (SETS(missing_handle, "-mid3"))
-				missing_handle = MISS_ID3;
 			else
 				goto fail;
 		else if (attr_file == NULL)
