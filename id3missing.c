@@ -95,7 +95,7 @@ void numeric_id3_fill_missing(const struct description *descr,
 		struct example_set *lset, const int attr_index,
 		const int miss_index)
 {
-	fprintf(stderr, "TODO%d\n", __LINE__);
+	fprintf(stderr, "TODO id3 %s %d\n", __FILE__, __LINE__);
 }
 
 void discrete_maj_fill_missing(const struct description *descr,
@@ -171,6 +171,6 @@ void discrete_id3_fill_missing(const struct description *descr,
 		struct example_set *lset, const int attr_index,
 		const int miss_index)
 {
-	fprintf(stderr, "TODO%d\n", __LINE__);
+	fprintf(stderr, "TODO id3 %s %d\n", __FILE__, __LINE__);
 }
 

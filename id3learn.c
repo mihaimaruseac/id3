@@ -460,7 +460,7 @@ void id3_attr_discr(const struct description *descr,
 		goto end;
 	}
 
-	fprintf(stderr, "TODO %s %d\n", __FILE__, __LINE__);
+	fprintf(stderr, "TODO full discretization %s %d\n", __FILE__, __LINE__);
 
 	for (i = 0; i < ccount; i++)
 		fprintf(stderr, "%d(%5.3lf) ", candidates[i], entropies[i]);

@@ -97,18 +97,18 @@ void graph_ascii(const struct description *descr,
 void graph_dot(const struct description *descr,
 		const struct classifier *cls, FILE* out)
 {
-	fprintf(stderr, "TODO %s %d\n", __FILE__, __LINE__);
+	fprintf(stderr, "TODO output dot %s %d\n", __FILE__, __LINE__);
 }
 
 void graph_scheme(const struct description *descr,
 		const struct classifier *cls, FILE* out)
 {
-	fprintf(stderr, "TODO %s %d\n", __FILE__, __LINE__);
+	fprintf(stderr, "TODO output scheme %s %d\n", __FILE__, __LINE__);
 }
 
 void graph_ifthen(const struct description *descr,
 		const struct classifier *cls, FILE* out)
 {
-	fprintf(stderr, "TODO %s %d\n", __FILE__, __LINE__);
+	fprintf(stderr, "TODO output if %s %d\n", __FILE__, __LINE__);
 }
 
