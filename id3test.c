@@ -77,6 +77,5 @@ void classify(const struct description *descr,
 			classify(descr, cls->cls[i], ex, out);
 			return;
 		}
-	fprintf(stderr, "TODO %s %d\n", __FILE__, __LINE__);
 }
 

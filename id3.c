@@ -22,8 +22,9 @@
  */
 
 #include "globals.h"
-#include "id3learn.h"
 #include "id3graph.h"
+#include "id3learn.h"
+#include "id3test.h"
 
 /**
  * @brief Macro used to set a default value to a flag argument if it is still
