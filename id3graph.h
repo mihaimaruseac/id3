@@ -41,7 +41,7 @@ int id3_output_graph(FILE *id3, FILE *out, int graph_mode);
  * @param out Where to output
  */
 static void graph_classifier(const struct description *descr,
-		const struct classifier *cls, int graph_mode, FILE* out);
+		const struct classifier *cls, int graph_mode, FILE *out);
 
 /**
  * @brief Outputs the classifier to ASCII art.
@@ -52,7 +52,7 @@ static void graph_classifier(const struct description *descr,
  * @param level Level of indentation
  */
 static void graph_ascii(const struct description *descr,
-		const struct classifier *cls, FILE* out, int level);
+		const struct classifier *cls, FILE *out, int level);
 
 /**
  * @brief Outputs the classifier using Dot.
@@ -62,7 +62,7 @@ static void graph_ascii(const struct description *descr,
  * @param out Where to output
  */
 static void graph_dot(const struct description *descr,
-		const struct classifier *cls, FILE* out);
+		const struct classifier *cls, FILE *out);
 
 /**
  * @brief Outputs the classifier to Scheme/Lisp constructs.
@@ -72,17 +72,7 @@ static void graph_dot(const struct description *descr,
  * @param out Where to output
  */
 static void graph_scheme(const struct description *descr,
-		const struct classifier *cls, FILE* out);
-
-/**
- * @brief Outputs the classifier to if-then constructs
- *
- * @param descr The description to use
- * @param cls The classifier
- * @param out Where to output
- */
-static void graph_ifthen(const struct description *descr,
-		const struct classifier *cls, FILE* out);
+		const struct classifier *cls, FILE *out);
 
 /**
  * @brief Tries to print the class from a classifier when using Scheme-like
@@ -156,7 +146,8 @@ static void g_sch_if(const struct description *descr,
  * @param descr The description to use
  * @param cls The classifier
  * @param out Where to output
- * @param level Level of indentation
+ * @param level Count of nodes used (level of nodes)
+ * @return The count of nodes used
  */
 static int dot_output(const struct description *descr,
 		const struct classifier *cls, FILE *out, int level);

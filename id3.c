@@ -77,7 +77,6 @@ static void usage()
 			"\t\t\t-gascii - display in ASCII art (default)\n"
 			"\t\t\t-gdot - display using Dot\n"
 			"\t\t\t-gscheme - display Scheme-like (Lisp-like)\n"
-			"\t\t\t-gifthen - display using if (...) blocks\n"
 			"\n"
 			"\tClassification options and arguments:\n"
 			"\t\tFILES = ATTRFILE TESTFILE [OUTFILE(output)]\n"
@@ -206,8 +205,6 @@ static void graphing_instance(int argc, char **argv)
 				graph_mode = TREE_DOT;
 			else if (SETS(graph_mode, "-gscheme"))
 				graph_mode = TREE_SCHEME;
-			else if (SETS(graph_mode, "-gifthen"))
-				graph_mode = TREE_IFTHEN;
 			else
 				goto fail;
 		else if (id3_file == NULL)

@@ -42,7 +42,7 @@ nodescr:
 }
 
 void graph_classifier(const struct description *descr,
-		const struct classifier *cls, int graph_mode, FILE* out)
+		const struct classifier *cls, int graph_mode, FILE *out)
 {
 	switch (graph_mode) {
 	case TREE_ASCII:
@@ -54,14 +54,11 @@ void graph_classifier(const struct description *descr,
 	case TREE_SCHEME:
 		graph_scheme(descr, cls, out);
 		break;
-	case TREE_IFTHEN:
-		graph_ifthen(descr, cls, out);
-		break;
 	}
 }
 
 void graph_ascii(const struct description *descr,
-		const struct classifier *cls, FILE* out, int level)
+		const struct classifier *cls, FILE *out, int level)
 {
 	int i, aid;
 	char *name, *val;
@@ -139,7 +136,6 @@ int dot_output(const struct description *descr,
 void graph_dot(const struct description *descr,
 		const struct classifier *cls, FILE *out)
 {
-	fprintf(stderr, "TODO output dot %s %d\n", __FILE__, __LINE__);
 	fprintf(out, "graph {\n");
 	dot_output(descr, cls, out, 0);
 	fprintf(out, "}\n");
@@ -215,14 +211,8 @@ void g_sch_if(const struct description *descr,
 }
 
 void graph_scheme(const struct description *descr,
-		const struct classifier *cls, FILE* out)
+		const struct classifier *cls, FILE *out)
 {
 	g_sch_if(descr, cls, out, 0);
-}
-
-void graph_ifthen(const struct description *descr,
-		const struct classifier *cls, FILE* out)
-{
-	fprintf(stderr, "TODO output if %s %d\n", __FILE__, __LINE__);
 }
 

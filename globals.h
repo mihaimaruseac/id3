@@ -48,7 +48,6 @@
 #define TREE_ASCII 1 /**< @brief output ID3 tree in ASCII */
 #define TREE_DOT 2 /**< @brief output ID3 tree using Dot */
 #define TREE_SCHEME 3 /**< @brief output ID3 tree as Scheme/Lisp functions */
-#define TREE_IFTHEN 4 /**< @brief output ID3 tree as if(...) code */
 
 #define MISS_COUNT 2 /**< @brief max number of missing columns */
 

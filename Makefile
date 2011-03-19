@@ -20,7 +20,7 @@ test_learn: $(TARGET)
 	$(DEBUG) $(TARGET) l tests/1/atribute.txt tests/1/invatare.txt tests/1/dump.txt
 
 test_graph: $(TARGET)
-	$(DEBUG) $(TARGET) g -gdot tests/1/dump.txt -
+	$(DEBUG) $(TARGET) g tests/1/dump.txt
 
 test_classify: $(TARGET)
 	$(DEBUG) $(TARGET) c tests/1/dump.txt tests/1/test.txt -
