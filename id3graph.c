@@ -94,10 +94,58 @@ void graph_ascii(const struct description *descr,
 		}
 }
 
+int dot_output(const struct description *descr,
+		const struct classifier *cls, FILE *out, int level)
+{
+	char *name, *dname, *aname;
+	int i, l, ll, type;
+
+	if (cls->C == 0) {
+		name = descr->classes[cls->id];
+		fprintf(out, "%s%d [label=%s];\n", name, level, name);
+		return level + 1;
+	}
+
+	name = descr->attribs[cls->id]->name;
+	type = descr->attribs[cls->id]->type;
+	fprintf(out, "%s%d [label=%s][shape=box];\n", name, level, name);
+	l = level++;
+	for (i = 0; i < cls->C; i++){
+		ll = level;
+		level = dot_output(descr, cls->cls[i], out, level);
+		if (cls->cls[i]->C == 0)
+			dname = descr->classes[cls->cls[i]->id];
+		else
+			dname = descr->attribs[cls->cls[i]->id]->name;
+		if (type == NUMERIC) {
+			if (i < cls->C - 1)
+				fprintf(out, "%s%d -- %s%d [label=\"<%d\"]"
+						"[fontsize=10];\n",
+						name, l, dname, ll,
+						cls->values[i]);
+			else
+				fprintf(out, "%s%d -- %s%d[label=\">=%d\"]"
+						"[fontsize=10];\n",
+						name, l, dname, ll,
+						cls->values[i - 1]);
+		} else {
+			aname = (char *)
+				descr->attribs[cls->id]->ptr[cls->values[i]];
+			fprintf(out, "%s%d -- %s%d[label=\"%s\"]"
+					"[fontsize=10];\n",
+					name, l, dname, ll, aname);
+		}
+	}
+	return level;
+}
+
 void graph_dot(const struct description *descr,
-		const struct classifier *cls, FILE* out)
+		const struct classifier *cls, FILE *out)
 {
 	fprintf(stderr, "TODO output dot %s %d\n", __FILE__, __LINE__);
+	fprintf(out, "graph {\n");
+	dot_output(descr, cls, out, 0);
+	fprintf(out, "}\n");
 }
 
 void g_sch_print(const struct description *descr,

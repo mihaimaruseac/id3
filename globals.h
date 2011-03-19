@@ -93,10 +93,9 @@ enum attr_type {
  *
  * If the attribute is numeric, the ptr vector will be used only after reading
  * the learning example. It will be an index into the example data, used to
- * sort in ascending order the example data by this attribute. If at a later
- * time the example is splitted, the index will remain the same but some of
- * the values will not be relevant for that example. However, code doing this
- * will take care of that, thus, it is not a concern right now.
+ * sort in ascending order the example data by this attribute. After
+ * discretization, this vector will contain the limits used in the
+ * discretization.
  *
  * Otherwise, the ptr will point to a vector of names, used for the discrete
  * values. Each name can be obtained by converting the integer to a char* and
@@ -173,6 +172,9 @@ struct example_set {
 	int missing[MISS_COUNT];
 };
 
+/**
+ * @brief Structure representing the id3 classifier (or id3 tree).
+ */
 struct classifier {
 	/** Id of classifier (tag used to generate it) */
 	int tag;
