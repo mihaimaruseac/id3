@@ -24,6 +24,7 @@ int id3_output_graph(FILE *id3, FILE *out, int graph_mode)
 	struct classifier *cls;
 
 	descr = read_description_file(id3);
+	CHECK(descr != NULL, nodescr);
 	cls = read_classifier(id3);
 	CHECK(cls != NULL, fail);
 	graph_classifier(descr, cls, graph_mode, out);
@@ -33,9 +34,10 @@ int id3_output_graph(FILE *id3, FILE *out, int graph_mode)
 	free_classifier(cls);
 	return 0;
 fail:
+	free_classifier(cls);
 	free_description(descr);
 	free_and_set_NULL(descr);
-	free_classifier(cls);
+nodescr:
 	return set_error(EINVAL);
 }
 
