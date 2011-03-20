@@ -179,5 +179,16 @@ void id3_attr_discr(const struct description *descr,
 		const struct example_set *lset,
 		int index, int num_handle);
 
+static double id3_get_split_value(const struct description *descr,
+		const struct example_set *lset, int index);
+
+static void id3_attr_full_discr(const struct description *descr,
+		const struct example_set *lset,
+		int index, int *candidates, double *entropies,
+		int ccount, int imin);
+
+static int compute_candidates(const struct description *descr,
+		const struct example_set *lset, int index, int *candidates);
+
 #endif
 

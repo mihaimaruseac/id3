@@ -68,7 +68,8 @@ void graph_ascii(const struct description *descr,
 
 	if (cls->C == 0) {
 		fprintf(out, "%*c==> %s\n", TABS * level + 1, ' ',
-				descr->classes[cls->id]);
+				cls->id != -1 ? descr->classes[cls->id] :
+				"unknown");
 		return;
 	}
 	if (descr->attribs[aid]->type == NUMERIC) {
@@ -98,7 +99,7 @@ int dot_output(const struct description *descr,
 	int i, l, ll, type;
 
 	if (cls->C == 0) {
-		name = descr->classes[cls->id];
+		name = cls->id != -1 ? descr->classes[cls->id] : "unknown";
 		fprintf(out, "%s%d [label=%s];\n", name, level, name);
 		return level + 1;
 	}
@@ -111,7 +112,8 @@ int dot_output(const struct description *descr,
 		ll = level;
 		level = dot_output(descr, cls->cls[i], out, level);
 		if (cls->cls[i]->C == 0)
-			dname = descr->classes[cls->cls[i]->id];
+			dname = cls->cls[i]->id != -1 ?
+				descr->classes[cls->cls[i]->id] : "unknown";
 		else
 			dname = descr->attribs[cls->cls[i]->id]->name;
 		if (type == NUMERIC)
@@ -145,7 +147,8 @@ void g_sch_print(const struct description *descr,
 		const struct classifier *cls, FILE *out, int level)
 {
 	if (cls->C == 0)
-		fprintf(out, "'%s", descr->classes[cls->id]);
+		fprintf(out, "'%s", cls->id != -1 ? descr->classes[cls->id] :
+				"unknown");
 	else {
 		fprintf(out, "\n");
 		g_sch_if(descr, cls, out, level + 2);

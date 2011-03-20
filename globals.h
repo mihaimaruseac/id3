@@ -372,7 +372,7 @@ static int get_index_from_descr(const char *string,
  * each user must call this function to reset the filter value to the original
  * value.
  */
-void clear_filter_info(struct example_set *lset);
+void clear_filter_info(const struct example_set *lset);
 
 /**
  * @brief Frees the memory allocated to one description.
@@ -436,6 +436,15 @@ int set_error(int err);
  * @return NULL
  */
 void *free_and_set_NULL(void *ptr);
+
+/**
+ * @brief Returns the index of minimum value from a vector of doubles.
+ *
+ * @param v the vector
+ * @param size size of vector
+ * @return index of minimum value
+ */
+int get_double_min(double *v, int size);
 
 #endif
 

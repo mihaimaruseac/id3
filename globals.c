@@ -345,7 +345,7 @@ void write_id3_temp_file(const struct description *descr,
 	write_classifier(cls, file);
 }
 
-void clear_filter_info(struct example_set *lset)
+void clear_filter_info(const struct example_set *lset)
 {
 	int i;
 
@@ -435,5 +435,20 @@ int set_error(int err)
 {
 	errno = err;
 	return err;
+}
+
+int get_double_min(double *v, int size)
+{
+	double min;
+	int imin, i;
+
+	imin = 0;
+	min = v[imin];
+	for (i = 1; i < size; i++)
+		if (min > v[i]) {
+			min = v[i];
+			imin = i;
+		}
+	return imin;
 }
 
