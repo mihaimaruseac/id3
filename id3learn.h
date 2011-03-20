@@ -36,20 +36,6 @@ int id3_learn_bootstrap_file(int num_handle, int missing_handle,
 		FILE *attr_file, FILE *learn_file, FILE *id3_file);
 
 /**
- * @brief The learning process (wrapper function).
- *
- * This function is recursive. The ending condition is done by the tag
- * variable, which is used to filter the remaining examples (and to create the
- * id3 tree nodes).
- *
- * @param descr The description of the problem.
- * @param lset The learning set.
- * @param tag Tag used to filter the learning set.
- */
-static struct classifier *id3_learn(const struct description *descr,
-		const struct example_set *lset, int tag);
-
-/**
  * @brief Builds a classifier obtained after splitting the example set
  * according to one attribute.
  *
@@ -66,108 +52,6 @@ struct classifier *split_on(const struct description *descr,
 		const struct example_set *lset, int tag, int id);
 
 /**
- * @brief Fills the missing spots.
- *
- * @param descr The description of the problem.
- * @param lset The learning set.
- * @param missing_handle How to handle missing arguments.
- */
-static void id3_treat_missing(const struct description *descr,
-		struct example_set *lset, int missing_handle);
-
-/**
- * @brief Builds indexes for numeric attributes.
- *
- * The indexes are used to implement handling of numeric attributes and to
- * sort the input set, if needed. Subsets of the input will keep the same
- * index, although some values may be missing in them.
- *
- * @param descr The description of the problem.
- * @param lset The learning set
- */
-static void id3_build_index(const struct description *descr,
-		const struct example_set *lset);
-
-/**
- * @brief Starts the discretization process for each numeric attribute.
- *
- * It assumes that the indexes are computed and destroys them afterwards,
- * replacing them with tests for the discrete bins.
- *
- * @param descr The description of the problem.
- * @param lset The learning set
- * @param num_handle How to handle the numeric arguments: full discretization
- * or binary discretization.
- */
-static void id3_discretization(const struct description *descr,
-		const struct example_set *lset, int num_handle);
-
-/**
- * @brief Computes the count of eamples having a specified filter value.
- *
- * @param lset The learning set
- * @param tag The filter value
- * @return Count of examples with specified tag
- */
-static int id3_filtered_count(const struct example_set *lset, int tag);
-
-/**
- * @brief Computes the information given by a set of examples (I_{DT})
- *
- * @param descr The description of the problem
- * @param lset The learning set
- * @param tag Tag to filter the learning set
- * @param count Count of filtered values
- * @return I_{DT}
- */
-static double id3_I_decision_tree(const struct description *descr,
-		const struct example_set *lset, int tag, int count);
-
-/**
- * @brief Computes the expected average information obtained by splitting on a
- * numeric attribute.
- *
- * @param descr The description of the problem
- * @param lset The learning set
- * @param index Index of attribute
- * @param tag Tag to filter the learning set
- * @param count Count of filtered values
- * @return E_A
- */
-static double test_split_numeric(const struct description *descr,
-		const struct example_set *lset,
-		int index, int tag, int count);
-
-/**
- * @brief Computes the expected average information obtained by splitting on a
- * discrete attribute.
- *
- * @param descr The description of the problem
- * @param lset The learning set
- * @param index Index of attribute
- * @param tag Tag to filter the learning set
- * @param count Count of filtered values
- * @return E_A
- */
-static double test_split_discrete(const struct description *descr,
-		const struct example_set *lset,
-		int index, int tag, int count);
-
-/**
- * @brief Computes the entropy obtained by splitting a numeric domain in two
- * at a certain limit according to the description and example provided.
- *
- * @param descr The description of the problem
- * @param lset The learning set
- * @param index Index of attribute
- * @param limit The value to split on
- * @return Then entropy obtained by splitting.
- */
-static double split_e(const struct description *descr,
-		const struct example_set *lset,
-		int index, int limit);
-
-/**
  * @brief Discretization of a single attribute.
  *
  * @param descr The description of the problem
@@ -178,17 +62,6 @@ static double split_e(const struct description *descr,
 void id3_attr_discr(const struct description *descr,
 		const struct example_set *lset,
 		int index, int num_handle);
-
-static double id3_get_split_value(const struct description *descr,
-		const struct example_set *lset, int index);
-
-static void id3_attr_full_discr(const struct description *descr,
-		const struct example_set *lset,
-		int index, int *candidates, double *entropies,
-		int ccount, int imin);
-
-static int compute_candidates(const struct description *descr,
-		const struct example_set *lset, int index, int *candidates);
 
 #endif
 

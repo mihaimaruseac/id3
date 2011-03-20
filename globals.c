@@ -33,6 +33,114 @@ static int missing_count;
  */
 static int missing_indexes[MISS_COUNT];
 
+/**
+ * @brief Reads a set to use when learning (learning = 1) or classifying
+ * (learning = 0).
+ *
+ * If learning is 0 then there will be no missing values and no class
+ * informations in the file. However, the structures would be too similar if
+ * separate data types would be used for the two cases.
+ *
+ * @param file Description file
+ * @param learning Flag describing what to expect
+ * @param descr The description of the entire model.
+ * @return The required set.
+ */
+static struct example_set *read_set(FILE *file, int learning,
+		const struct description *descr);
+
+/**
+ * @brief Reads one attribute from the description file.
+ *
+ * Used in a loop in the main reading function.
+ *
+ * @param file File containing the description.
+ * @return The read attribute.
+ */
+static struct attribute *read_attribute(FILE *file);
+
+/**
+ * @brief Reads one example from a file.
+ *
+ * Used in a loop to read the entire example set.
+ *
+ * @param file File containing the example
+ * @param learning Flag describing what to expect (see read_set)
+ * @param descr The description of the entire model.
+ * @param set The example set from which this example is part of.
+ * @return The read example.
+ */
+static struct example *read_example(FILE *file, int learning,
+		const struct description *descr,
+		struct example_set *set);
+
+/**
+ * @brief Writes an example to a file.
+ *
+ * @param ex Example to be written.
+ * @param descr Description to use while writing.
+ * @param file File to write to.
+ */
+static void write_example(const struct example *ex,
+		const struct description *descr,
+		FILE *file);
+
+/**
+ * @brief Writes an attribute to a file.
+ *
+ * @param attr Attribute to be written.
+ * @param file File to write to.
+ */
+static void write_attribute(const struct attribute *attr, FILE *file);
+
+/**
+ * @brief Tests if an example contains a missing value on the current
+ * position.
+ *
+ * @param ex Example to test
+ * @param index Where to look
+ * @return 1 if missing, 0 otherwise.
+ */
+static int missing_value(const struct example *ex, int index);
+
+/**
+ * @brief Records a new missing value from the learning set.
+ *
+ * @param index Index of attribute
+ * @param set Example set in which to record the missing value
+ * @return Change in flag to record missing value or 0 on error
+ */
+static int record_missing(int index, struct example_set *set);
+
+/**
+ * @brief Gets the mapping between the read attribute value and the indexes
+ * used in the example_set and example structures.
+ *
+ * @param string The read string
+ * @param attr The corresponding attribute
+ * @return The index from the mapping
+ */
+static int get_index_from_descr(const char *string,
+		const struct attribute *attr);
+
+/**
+ * @brief Frees one attribute from a description.
+ *
+ * Does NOT free the pointer itself.
+ *
+ * @param ptr Pointer to the attribute
+ */
+static void free_attribute(struct attribute *ptr);
+
+/**
+ * @brief Frees one example from an example set.
+ *
+ * Does NOT free the pointer itselt.
+ *
+ * @param ptr Pointer to the example.
+ */
+static void free_example(struct example *ptr);
+
 void *free_and_set_NULL(void *ptr)
 {
 	if (ptr)

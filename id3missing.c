@@ -18,8 +18,7 @@
 #include "globals.h"
 #include "id3missing.h"
 
-void numeric_maj_fill_missing(const struct description *descr,
-		struct example_set *lset, int attr_index,
+void numeric_maj_fill_missing(struct example_set *lset, int attr_index,
 		int miss_index)
 {
 	int sum, count, i;

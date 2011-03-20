@@ -17,6 +17,18 @@
 #include "globals.h"
 #include "id3test.h"
 
+/**
+ * @brief Classifies an example
+ *
+ * @param descr Description
+ * @param cls Classifier
+ * @param ex Example
+ * @param out Output
+ */
+static void classify(const struct description *descr,
+		const struct classifier *cls, const struct example *ex,
+		FILE *out);
+
 int id3_test(FILE *id3, FILE *test, FILE *out)
 {
 	struct description *descr;

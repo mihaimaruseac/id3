@@ -22,13 +22,11 @@
  * @brief Treats missing numeric attributes by filling with the average of the
  * other values.
  *
- * @param descr The description
  * @param lset The learning set
  * @param attr_index Index of attribute with missing values
  * @param miss_index Index in missing structure.
  */
-void numeric_maj_fill_missing(const struct description *descr,
-		struct example_set *lset, int attr_index,
+void numeric_maj_fill_missing(struct example_set *lset, int attr_index,
 		int miss_index);
 
 /**
