@@ -47,6 +47,7 @@ int id3_learn_bootstrap_file(int num_handle, int missing_handle,
  * @param lset The learning set.
  * @param tag Tag used to filter the learning set.
  * @param id Id of attribute being split on
+ * @return Classifier
  */
 struct classifier *split_on(const struct description *descr,
 		const struct example_set *lset, int tag, int id);

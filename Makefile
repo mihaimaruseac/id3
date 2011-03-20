@@ -15,7 +15,7 @@ clean:
 purge:
 	$(RM) -r $(OBJS) $(TARGET) tags html
 
-tests:
+tests: $(TARGET)
 	@echo "Running tests..."
 	@tests/runAll.sh
 	@echo "Testing done"

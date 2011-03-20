@@ -23,6 +23,12 @@
 
 /**
  * @brief
+ * Significance level.
+ */
+#define EPS 1e-4
+
+/**
+ * @brief
  * Static value used to remember the last tag used.
  */
 static int last_tag;
@@ -192,6 +198,18 @@ static void id3_attr_full_discr(const struct description *descr,
 static int compute_candidates(const struct description *descr,
 		const struct example_set *lset, int index, int *candidates);
 
+/**
+ * @brief Returns an unknown class node for a classifier.
+ *
+ * This is obtained only when the learning set is too complex to learn.
+ *
+ * @param descr The description of the problem.
+ * @param lset The learning set.
+ * @param tag Tag used to filter the learning set.
+ * @return Classifier
+ */
+struct classifier *get_default(int tag);
+
 int id3_learn_bootstrap_file(int num_handle, int missing_handle,
 		FILE *attr_file, FILE *learn_file, FILE *id3_file)
 {
@@ -357,12 +375,14 @@ struct classifier *id3_learn(const struct description *descr,
 		else
 			exp = test_split_discrete(descr, lset, i, tag, count);
 		gain = iad - exp;
-		if (gbest < gain) {
+		if (gbest < gain && gain > EPS) {
 			gbest = gain;
 			ibest = i;
 		}
 	}
 
+        if (gbest < EPS)
+            return get_default(tag);
 	return split_on(descr, lset, tag, ibest);
 }
 
@@ -469,6 +489,17 @@ struct classifier *split_on(const struct description *descr,
 	for (i = 0; i < cls->C; i++)
 		cls->cls[i] = build_classifier(descr, lset, cls, i);
 
+	return cls;
+}
+
+struct classifier *get_default(int tag)
+{
+	struct classifier *cls;
+
+	cls = calloc(1, sizeof(*cls));
+	cls->tag = tag;
+	cls->id = -1;
+	cls->C = 0;
 	return cls;
 }
 
