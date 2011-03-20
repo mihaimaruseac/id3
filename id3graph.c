@@ -186,7 +186,7 @@ void graph_ascii(const struct description *descr,
 	char *name, *val;
 
 	aid = cls->id;
-	name = descr->attribs[aid]->name;
+	name = aid != -1 ? descr->attribs[aid]->name : "unknown";
 
 	if (cls->C == 0) {
 		fprintf(out, "%*c==> %s\n", TABS * level + 1, ' ',

@@ -17,13 +17,13 @@ purge:
 	$(RM) -r $(OBJS) $(TARGET) tags html
 
 test_learn: $(TARGET)
-	$(DEBUG) $(TARGET) l -nfull tests/1/atribute.txt tests/1/invatare.txt tests/1/dump.txt
+	$(DEBUG) $(TARGET) l -nfull tests/2/atribute.txt tests/2/invatare.txt tests/2/dump.txt
 
 test_graph: $(TARGET)
-	$(DEBUG) $(TARGET) g tests/1/dump.txt
+	$(DEBUG) $(TARGET) g tests/2/dump.txt
 
 test_classify: $(TARGET)
-	$(DEBUG) $(TARGET) c tests/1/dump.txt tests/1/test.txt -
+	$(DEBUG) $(TARGET) c tests/2/dump.txt tests/2/test.txt -
 
 doc:
 	doxygen > /dev/null
