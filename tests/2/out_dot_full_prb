@@ -1,0 +1,15 @@
+graph {
+Third0 [label=Third][shape=box];
+Less1 [label=Less];
+Third0 -- Less1 [label="<6"][fontsize=10];
+Second2 [label=Second][shape=box];
+Less3 [label=Less];
+Second2 -- Less3 [label="<4"][fontsize=10];
+Medium4 [label=Medium];
+Second2 -- Medium4 [label="<8"][fontsize=10];
+Medium5 [label=Medium];
+Second2 -- Medium5[label=">=8"][fontsize=10];
+Third0 -- Second2 [label="<10"][fontsize=10];
+Greater6 [label=Greater];
+Third0 -- Greater6[label=">=10"][fontsize=10];
+}

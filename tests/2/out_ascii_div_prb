@@ -1,0 +1,10 @@
+ Third < 6
+   ==> Less
+ Third >= 6
+   Fourth < 18
+     Second < 4
+       ==> Less
+     Second >= 4
+       ==> Medium
+   Fourth >= 18
+     ==> Greater

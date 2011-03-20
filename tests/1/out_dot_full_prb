@@ -1,0 +1,19 @@
+graph {
+outlook0 [label=outlook][shape=box];
+humidity1 [label=humidity][shape=box];
+unknown2 [label=unknown];
+humidity1 -- unknown2 [label="<70"][fontsize=10];
+C13 [label=C1];
+humidity1 -- C13 [label="<80"][fontsize=10];
+C24 [label=C2];
+humidity1 -- C24[label=">=80"][fontsize=10];
+outlook0 -- humidity1[label="sunny"][fontsize=10];
+C15 [label=C1];
+outlook0 -- C15[label="overcast"][fontsize=10];
+windy6 [label=windy][shape=box];
+C27 [label=C2];
+windy6 -- C27[label="true"][fontsize=10];
+C18 [label=C1];
+windy6 -- C18[label="false"][fontsize=10];
+outlook0 -- windy6[label="rain"][fontsize=10];
+}

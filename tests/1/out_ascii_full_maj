@@ -1,0 +1,14 @@
+ outlook = sunny
+   humidity < 70
+     ==> unknown
+   humidity < 80
+     ==> C1
+   humidity >= 80
+     ==> C2
+ outlook = overcast
+   ==> C1
+ outlook = rain
+   windy = true
+     ==> C2
+   windy = false
+     ==> C1
