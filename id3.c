@@ -78,7 +78,7 @@ static void usage()
 			"\t\t\t-gscheme - display Scheme-like (Lisp-like)\n"
 			"\n"
 			"\tClassification options and arguments:\n"
-			"\t\tFILES = ATTRFILE TESTFILE [OUTFILE(output)]\n"
+			"\t\tFILES = ID3FILE TESTFILE [OUTFILE(output)]\n"
 			"\t\t\tOUTFILE can be - (or missing) for stdout\n"
 		);
 	exit(EXIT_FAILURE);

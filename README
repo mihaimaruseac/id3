@@ -1,0 +1,148 @@
+Mihai Maruseac, 341C3
+INVA, Tema 1
+ID3
+
+1. Mod rulare
+^^^^^^^^^^^^^
+
+După compilare (make), aplicația poate fi folosită în 3 scopuri (literele din
+paranteză semnifică opțiunea necesară pentru scopul respectiv):
+	* pentru a obține un clasificator (l)
+	* pentru a reprezenta clasificatorul sub diverse formate (g)
+	* pentru a clasifica un set de exemple (c)
+
+Deci, aplicația trebuie să fie pornită utilizând una din aceste litere ca
+argument în linia de comandă.
+
+Fiecare din modurile de mai sus, acceptă un set de parametri, astfel:
+	* modul learning (l):
+		* modul de tratare al atributelor numerice:
+			* -ndiv: default, o singură divizare
+			* -nfull: discretizare completă
+		* modul de obținere al valorilor pentru atributele missing:
+			* -mmaj: default, completează cu valoarea majoritară
+			* -mprb: utilizează probabilități pentru a deduce
+				valoarea lipsă
+		* fișierul de atribute: atribute.txt
+		* fișierul de exemple de învățare: invatare.txt
+		* un fișier în care se va salva clasificatorul
+	* modul de reprezentare al clasificatorului (g):
+		* modul de reprezentare al arborelui ID3:
+			* -gascii: afișare, în mod text, fără multă
+				formatare (default)
+			* -gdot: afișare în formatul potrivit pentru a obține
+				un grafic al arborelui utilizând dot. Necesită
+				Graphviz instalat și rularea comenzii urmată de
+				comanda pentru desenarea grafului (vezi
+				exemple)
+			* -gscheme: afișare sub forma unui corp de funcție
+				Scheme/Lisp
+		* fișierul conținând clasificatorul
+		* opțional, fișierul de ieșire sau - pentru stdout
+	* modul de clasificare al unor exemple (c):
+		* fișierul cu clasificatorul
+		* fișierul cu exemplele ce trebuiesc clasificate
+		* opțional, fișierul de ieșire sau - pentru stdout
+
+Prin urmare, toate modurile următoare reprezintă comenzi corecte (după # se
+află comentariile pentru fiecare comandă):
+
+./id3 l atribute.txt invatare.txt dump.txt # învățare normală
+./id3 l -ndiv atribute.txt invatare.txt dump.txt # binary discretization
+./id3 l -nfull atribute.txt invatare.txt dump.txt # full discretization
+./id3 l -mmaj atribute.txt invatare.txt dump.txt # completează pe baza majorității
+./id3 l -mprb atribute.txt invatare.txt dump.txt # folosește probabilități
+./id3 l -ndiv -mprb atribute.txt invatare.txt dump.txt # combinare a celor 2 opțiuni
+
+./id3 g dump.txt # display graf la stdout în format text
+./id3 g dump.txt - # display graf la stdout în format text
+./id3 g -gascii dump.txt # display graf la stdout în format text
+./id3 g -gdot dump.txt # display graf la stdout în format Dot
+./id3 g -gdot dump.txt | dot -Tpng > file.png # construiește toată imaginea ***
+./id3 g -gscheme dump.txt # display graf la stdout în format Scheme
+
+./id3 c dump.txt test.txt # clasificare normală cu output la stdout
+./id3 c dump.txt test.txt - # clasificare normală cu output la stdout
+./id3 c dump.txt test.txt out # clasificare normală cu output în out
+
+Notă: Comanda marcată cu *** necesită Graphviz instalat!
+
+Orice comandă invalidă va duce la apariția unui mesaj explicativ pentru a afla
+modul corect de invocare.
+
+Rulând comanda make tests se vor rula toate combinațiile posibile de comenzi în
+seturile de exemple atașate arhivei (realizând astfel și partea de testare a
+temei).
+
+2. Descriere generală
+^^^^^^^^^^^^^^^^^^^^^
+
+Implementarea este realizată în C.
+
+Se folosesc 5 structuri de date: 2 pentru a avea descrierea domeniului
+(obținute din fișierele atribute.txt), 2 pentru a avea evidența setului de
+exemple (cel de învățare obținut din invatare.txt și cel de test obținut din
+test.txt) și o structură pentru clasificator.
+
+Discretizarea alege întâi un vector de candidați: valorile din vectorul sortat
+de valori ale atributului unde clasa se schimbă. Apoi, calculează entropiile și
+câștigurile informaționale dacă s-ar fi realizat un singur split în fiecare din
+aceste puncte. Dacă se vrea discretizare binară, se selectează minimul
+entropiei și se realizează discretizare după această valoare. Altfel, se
+repetă procesul în continuare până ce nu mai rămân candidați sau o valoare
+calculată ajunge într-un punct de inflexiune. Este vorba de o valoare derivată
+de pe baza principiul Minimum Description Length care estimează câți biți sunt
+necesari atât pentru reprezentarea arborelui cât și pentru reprezentarea
+exemplelor. Normal, dorim un minim al reprezentării, ceea ce se traduce într-un
+punct de inflexiune în variabila calculată.
+
+Completarea atributelor lipsă în cazul în care se folosește criteriul
+majorității face ca în cazul atributelor numerice să se completeze cu media
+atributelor din set. Rezultatele sunt 100% echivalente dacă presupunem că
+atributul respectiv avea o distribuție normală, altfel se poate ajunge până la
+o eroare de maixm 10% în valoarea ghicită (în cazul în care atributul era scos
+dintr-o distribuție uniformă).
+
+Pentru cazul în care completarea se face pe baza teoriei probabilităților se
+folosește o optimizare: deoarece o mare parte din termenii formulelor folosite
+sunt constanți, întreg calculul se poate reduce la operații pe numere întregi.
+
+3. Conținut arhivă
+^^^^^^^^^^^^^^^^^^
+
+Arhiva conține:
+	* sursele implementării comentate și documentate (vezi secțiunea de
+	  Makefile pentru obținerea docuemntației complete)
+	* folder-ul tests conținând o suită de teste:
+		* primul exemplu (tests/1) este cel dat în enunț
+		* exemplul din tests/2 conține doar atribute numerice cu multe
+		  valori lipsă și cu 3 clase astfel: dacă suma celor 4 valori
+		  numerice din secvența crescătoare de atribute este <20 clasa
+		  este Less, dacă este >=40 clasa este Greater, altfel este
+		  Medium. Deși nici un clasificator ID3 nu se poate prinde de
+		  sumă, toți arborii generați estimează această descriere pe
+		  baza valorilor atributelor din mijloc.
+	* folder-ul doc conținând imagini utile pentru documentare:
+		* layout funcții și apelurile dintre acestea
+		* layout mod lansare aplicație
+	* fișierul Doxyfile necesar generării documentației complete (necesită
+	  Doxygen și Graphviz instalate)
+	* fișierul README: acest fișier
+	* fișierul Makefile descris în secțiunea următoare
+
+4. Conținut Makefile
+^^^^^^^^^^^^^^^^^^^^
+
+În Makefile există reguli pentru construirea surselor (make fără nici un
+argument), pentru eliminarea fișierelor generate mai puțin documentația (make
+clean) sau pentru eliminarea tuturor fișierelor create (make purge). 
+
+În plus, există regulă pentru testarea aplicației pe baza testelor prezente în
+folderul tests (make tests)
+
+De asemenea, rularea comenzii make doc va genera toată documentația Doxygen
+aferentă temei și va deschide un browser către aceasta. Pentru browse prin
+surse, se poate folosi make tags.
+
+---
+
