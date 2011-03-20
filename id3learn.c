@@ -203,8 +203,6 @@ static int compute_candidates(const struct description *descr,
  *
  * This is obtained only when the learning set is too complex to learn.
  *
- * @param descr The description of the problem.
- * @param lset The learning set.
  * @param tag Tag used to filter the learning set.
  * @return Classifier
  */
