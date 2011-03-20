@@ -25,7 +25,7 @@
  * @brief
  * Significance level.
  */
-#define EPS 1e-4
+#define EPS (1e-4)
 
 /**
  * @brief
@@ -379,8 +379,8 @@ struct classifier *id3_learn(const struct description *descr,
 		}
 	}
 
-        if (gbest < EPS)
-            return get_default(tag);
+	if (gbest < EPS)
+		return get_default(tag);
 	return split_on(descr, lset, tag, ibest);
 }
 
