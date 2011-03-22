@@ -31,8 +31,8 @@ classifier
 formats
 * ``./id3 c classifier test`` can be used to classify new examples
 
-If this seems a little confusing, try looking at image:doc/call_overview.png
-(``call_overview.png`` in the ``doc`` folder).
+If this seems a little confusing, try looking at ``call_overview.png`` in the
+``doc`` folder.
 
 B.1. Learning phase
 ```````````````````
@@ -113,5 +113,5 @@ This phase has no flags (as of now), you only have to give the classifier and th
 C. The code
 ...........
 
-A quick overview of the code can be obtained by running ``make doc`` with ``Doxygen`` and ``Graphviz`` installed. If not, looking at ``fct_overview.png`` from the ``doc`` folder may help. image: doc/fct_overview.png
+A quick overview of the code can be obtained by running ``make doc`` with ``Doxygen`` and ``Graphviz`` installed. If not, looking at ``fct_overview.png`` from the ``doc`` folder may help.
 
