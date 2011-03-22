@@ -25,10 +25,8 @@ B. Usage
 After running ``make``, you can use ``make tests`` to do all the regression
 tests or use the executable (see each section below for more details):
 
-* ``./id3 l description examples classifier`` can be used to learn a new
-classifier
-* ``./id3 g classifier`` can be used to output the classifier in a variety of
-formats
+* ``./id3 l description examples classifier`` can be used to learn a new classifier
+* ``./id3 g classifier`` can be used to output the classifier in a variety of formats
 * ``./id3 c classifier test`` can be used to classify new examples
 
 If this seems a little confusing, try looking at ``call_overview.png`` in the
@@ -38,8 +36,8 @@ B.1. Learning phase
 ```````````````````
 
 The learning process must be started with three files:
-* one describing the instance of the problem (in the ``tests`` folder it is
-called ``atribute.txt``)
+
+* one describing the instance of the problem (in the ``tests`` folder it is called ``atribute.txt``)
 * one describing the learning set (called ``invatare.txt``)
 * one in which to store the classifier.
 
