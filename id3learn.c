@@ -642,7 +642,7 @@ void id3_attr_full_discr(const struct description *descr,
 		int index, int *candidates, double *entropies,
 		int ccount, int imin)
 {
-	int i, j, last;
+	int i, j;
 	double p1, p2, delta;
 
 	p1 = id3_get_split_value(descr, lset, index);
@@ -660,7 +660,6 @@ void id3_attr_full_discr(const struct description *descr,
 			descr->attribs[index]->ptr[j] =
 				descr->attribs[index]->ptr[j-1];
 		descr->attribs[index]->ptr[i] = candidates[imin];
-		last = candidates[imin];
 		descr->attribs[index]->C++;
 		p2 = id3_get_split_value(descr, lset, index);
 		delta = p2 - p1;
