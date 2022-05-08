@@ -174,7 +174,7 @@ struct attribute *read_attribute(FILE *file)
 
 	for (i = 0; i < attr->C; i++) {
 		CHECK(fscanf(file, "%ms", &tmp) == 1, fail);
-		attr->ptr[i] = (int)strdup(tmp);
+		attr->ptr[i] = (long long)strdup(tmp);
 		tmp = free_and_set_NULL(tmp);
 	}
 

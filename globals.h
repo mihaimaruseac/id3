@@ -103,7 +103,7 @@ struct attribute {
 	/** Name of the attribute */
 	char *name;
 	/** Type-dependent pointer (see description) */
-	int *ptr;
+	long long *ptr;
 	/** Length of vector pointed to by ptr */
 	int C;
 	/** @param type Type of attribute */
